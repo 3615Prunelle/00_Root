@@ -4,12 +4,21 @@
 // ‼️ Global variables are forbidden
 
 // ⚪ #define
-# define ERROR_MESSSAGE_01	"Error\n"
+# define NC "\e[0m"
+# define YELLOW "\e[1;33m"
+# define GREEN "\e[1;32m"
+# define BLUE "\e[1;34m"
+# define MAGENTA "\e[1;35m"
+# define RED "\e[1;31m"
+# define CYAN "\e[1;36m"
+
 # define AVAILABLE 1
 # define TAKEN 0
 # define EATING 44
 # define THINKING 66
-# define SLEEPIING 88
+# define SLEEPING 88
+
+# define ERROR_MESSSAGE_01	"TBD\n"
 
 // ‼️ Si je mets des paths, mettre le chemin RELATIF depuis le dossier d'ou sera lancée la commande. Ce chemin est différent selon si je suis :
 // - Sur mon PC perso
@@ -28,31 +37,30 @@
 # include <pthread.h>
 
 // ⚪ Structs
-typedef struct	all_data
-{
-	pthread_t	*all_yakuzas;
-	int			amount_of_yakuzas;
-	int			**amount_of_chopsticks_available;
-	int			time_to_die;									// In milliseconds - Is it the right kind of variable ?
-	int			time_to_eat;									// Same question as above
-	int			time_to_sleep;									// Same question as above
-	int			number_of_times_each_philosopher_must_eat;		// Optional argument
-}				all_data;
-
 typedef struct	one_bro
 {
-	int		position;
-	int		current_state;
-	bool	has_chopstick_right;
-	bool	has_chopstick_left;
+	pthread_t		thread_ID;
+	int				position;
+	char			*current_state;
+	bool			has_chopstick_left;
+	bool			has_chopstick_right;
+	int				total_yakuzas;
+	int				*chopsticks_available;
+	unsigned long	time_to_eat;
+	unsigned long	time_to_sleep;
+	unsigned long	time_to_die;
+	int				how_many_meals;					// Optional argument
+	pthread_mutex_t	mutual_exclusion;
 }				one_bro;
 
 // ⚪ Functions signatures - Part 1
+void	*chopsticks_party(void *arg);
+bool	are_both_chopsticks_available(one_bro *this_yakuza);
 
 // ⚪ Functions signatures - Part 2
-
 // ⚪ Clean up functions
 
 // ⚪ Test functions
+void	print_yakuzas_status(one_bro *this_yakuza);
 
-#endif
+# endif
