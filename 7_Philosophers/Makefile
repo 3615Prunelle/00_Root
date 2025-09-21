@@ -36,7 +36,7 @@ NAME = philo
 CC = cc
 
 # Add -Wall -Wextra -Werror when done
-CFLAGS = -g -pthreads
+CFLAGS = -g -pthread
 
 # Flags de linking - No need here ?
 LFLAGS =

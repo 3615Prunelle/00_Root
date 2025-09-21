@@ -14,9 +14,9 @@
 
 # define AVAILABLE 1
 # define TAKEN 0
-# define EATING 44
-# define THINKING 66
-# define SLEEPING 88
+# define EATING 'E'
+# define THINKING 'T'
+# define SLEEPING 'S'
 
 # define ERROR_MESSSAGE_01	"TBD\n"
 
@@ -41,7 +41,7 @@ typedef struct	one_bro
 {
 	pthread_t		thread_ID;
 	int				position;
-	char			*current_state;
+	char			current_state;
 	bool			has_chopstick_left;
 	bool			has_chopstick_right;
 	int				total_yakuzas;
@@ -55,7 +55,9 @@ typedef struct	one_bro
 
 // ⚪ Functions signatures - Part 1
 void	*chopsticks_party(void *arg);
-bool	are_both_chopsticks_available(one_bro *this_yakuza);
+one_bro	*previous_bro(one_bro *this_yakuza, one_bro	*previous_yakuza);
+one_bro	*next_bro(one_bro *this_yakuza, one_bro	*next_yakuza);
+bool	can_yakuza_eat(one_bro *this_yakuza);
 
 // ⚪ Functions signatures - Part 2
 // ⚪ Clean up functions

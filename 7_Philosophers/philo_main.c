@@ -28,25 +28,70 @@ void	print_yakuzas_status(one_bro *this_yakuza)
 	int	i = 0;
 	while (i < this_yakuza->total_yakuzas)
 	{
-		printf("%sYakuza number %d is in state %s - Chopstick right : %d | Chopstick left : %d\n%s", YELLOW,
+		printf("%sYakuza number %d is in state %c - Chopstick right : %d | Chopstick left : %d\n%s", YELLOW,
 		this_yakuza->position, this_yakuza->current_state, this_yakuza->has_chopstick_right, this_yakuza->has_chopstick_left, NC);
 		this_yakuza++;
 		i++;
 	}
 }
 
-bool	are_both_chopsticks_available(one_bro *this_yakuza)
+one_bro	*previous_bro(one_bro *this_yakuza, one_bro *previous_yakuza)
 {
-	one_bro	*backup1 = this_yakuza;
-	one_bro	*backup2 = this_yakuza;
-	one_bro	*previous_yakuza = backup1--;
-	one_bro	*next_yakuza = backup2++;
+	one_bro	*backup = this_yakuza;
 
-	if(previous_yakuza->has_chopstick_right && next_yakuza->has_chopstick_left)
+	if (this_yakuza->position == 1)
+	{
+		previous_yakuza = backup + 5;		// ou 5 * sizeof(one_bro) is issues
+	}
+	else
+	{
+		previous_yakuza = backup--;
+	}
+	return (previous_yakuza);
+}
+
+one_bro	*next_bro(one_bro *this_yakuza, one_bro *next_yakuza)
+{
+	one_bro	*backup = this_yakuza;
+
+	if (this_yakuza->position == this_yakuza->total_yakuzas)
+	{
+		next_yakuza = backup - 5;			// ou 5 * sizeof(one_bro) is issues
+	}
+	else
+	{
+		next_yakuza = backup++;
+	}
+	return (next_yakuza);
+}
+
+bool	can_yakuza_eat(one_bro *this_yakuza, one_bro *previous_yakuza, one_bro *next_yakuza)
+{
+	if ((*this_yakuza->chopsticks_available >= 1) && (this_yakuza->current_state == 'E') &&
+			previous_yakuza->has_chopstick_right && next_yakuza->has_chopstick_left)
 	{
 		return(true);
 	}
 	return(false);
+}
+void	take_chopsticks_and_eat(one_bro *this_yakuza, one_bro *previous_yakuza, one_bro *next_yakuza)
+{
+	this_yakuza->has_chopstick_left = true;
+	this_yakuza->has_chopstick_right = true;
+	previous_yakuza->has_chopstick_right = false;
+	next_yakuza->has_chopstick_left = false;
+	this_yakuza->current_state = 'E';
+	(*this_yakuza->chopsticks_available)--;				// attention, ca ne fait la MAJ que sur ce yak, pas global, find solution
+}
+
+void	return_chopsticks_and_sleep(one_bro *this_yakuza, one_bro *previous_yakuza, one_bro *next_yakuza)
+{
+	this_yakuza->current_state = 'S';
+	(*this_yakuza->chopsticks_available)++;				// attention, ca ne fait la MAJ que sur ce yak, pas global, find solution
+	this_yakuza->has_chopstick_left = false;
+	this_yakuza->has_chopstick_right = false;
+	previous_yakuza->has_chopstick_right = true;
+	next_yakuza->has_chopstick_left = true;
 }
 
 void	*chopsticks_party(void *arg)
@@ -55,32 +100,21 @@ void	*chopsticks_party(void *arg)
 	pthread_t		current_thread = pthread_self();	// Useless, as we can access it via struct - Keep for debug ?
 	// ATTENTION : 1 thread = 1 yakuza
 
-	one_bro	*backup1 = this_yakuza;
-	one_bro	*backup2 = this_yakuza;
-	one_bro	*previous_yakuza = backup1--;				// Attention, faire fonction car segfault quand 1st one
-	one_bro	*next_yakuza = backup2++;					// Attention, faire fonction car segfault quand last one
+	one_bro	*previous_yakuza;
+	one_bro	*next_yakuza;
+
+	previous_yakuza = previous_bro(this_yakuza, previous_bro);
+	next_yakuza = next_bro(this_yakuza, next_bro);
 
 	printf("%sCurrent Yakuza in thread function : Position : %d | ID [%lu] Debug [%lu]\n%s", GREEN,
 		this_yakuza->position, this_yakuza->thread_ID, current_thread, NC);
 
 	pthread_mutex_lock(&this_yakuza->mutual_exclusion);
-	if ((*this_yakuza->chopsticks_available >= 1) && strcmp(*this_yakuza->current_state, "EATING" == 0) &&				// strcmp not allowed, re-code
-			previous_yakuza->has_chopstick_right && next_yakuza->has_chopstick_left)
+	if (can_yakuza_eat(this_yakuza, previous_yakuza, next_yakuza))
 	{
-		// faire fonction si tout marche
-		this_yakuza->has_chopstick_left = true;
-		this_yakuza->has_chopstick_right = true;
-		previous_yakuza->has_chopstick_right = false;
-		next_yakuza->has_chopstick_left = false;
-		this_yakuza->current_state = "EATING";
-		(*this_yakuza->chopsticks_available)--;
-		usleep(2000);		// Update avec valeurs en input when ok
-		this_yakuza->current_state = "SLEEPING";
-		(*this_yakuza->chopsticks_available)++;
-		this_yakuza->has_chopstick_left = false;
-		this_yakuza->has_chopstick_right = false;
-		previous_yakuza->has_chopstick_right = true;
-		next_yakuza->has_chopstick_left = true;
+		take_chopsticks_and_eat(this_yakuza, previous_yakuza, next_yakuza);
+		usleep(2000);				// Update avec valeurs en input when ok
+		return_chopsticks_and_sleep(this_yakuza, previous_yakuza, next_yakuza);
 	}
 	else
 	{
@@ -117,7 +151,7 @@ int	main(int argc, char **argv)
 	while (i < amount_of_yakuzas)
 	{
 		this_yakuza->position = i + 1;
-		this_yakuza->current_state = "THINKING";			// strdup intead (dans tous) + deal with malloc/free. Back to int ou char si trop relou
+		this_yakuza->current_state = 'T';			// strdup intead (dans tous) + deal with malloc/free. Back to int ou char si trop relou
 		this_yakuza->has_chopstick_left = false;
 		this_yakuza->has_chopstick_right = false;			// personne n'a de chopstick pour commencer
 		this_yakuza->total_yakuzas = amount_of_yakuzas;
