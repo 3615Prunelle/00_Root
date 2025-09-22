@@ -371,6 +371,11 @@ Explication des clés principales :
 VSCode définit ${workspaceFolder} comme la racine du projet ouvert dans VSCode, donc pour moi :
 /home/sophie/Documents/00_Root
 
+${workspaceRoot} et ${workspaceFolder} pointent vers le même chemin = le dossier racine du workspace ouvert (celui de l’explorateur VSCode à gauche)
+
+${workspaceFolder}	A toujours utiliser, c’est la bonne pratique actuelle. Variable “moderne” (utilisée dans toutes les nouvelles versions de VSCode)
+${workspaceRoot}	Est obsolète, mais encore reconnu pour compatibilité
+
 De la même manière, voici la bonne synthaxe pour désigner le dossier d'un fichier spécifique :
 ${fileDirname}
 */

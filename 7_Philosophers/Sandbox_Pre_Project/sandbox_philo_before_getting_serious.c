@@ -1,26 +1,3 @@
-/* Notes random
-🔴 Philosophers = Processes (NB : Processes are composed of one or multiple threads, and treads are composed of instructions). But NB : One thread = one process
-🟠 Chopsticks = Ressources that have to be shared between processes (but one at a time)
-🟡 Your program(s) must take the following arguments:
-			◦ number_of_philosophers: The number of philosophers and also the number of chopsticks.
-			◦ time_to_die (in milliseconds): If a philosopher has not started eating within time_to_die milliseconds since
-						the start of their last meal or the start of the simulation, they die.
-			◦ time_to_eat (in milliseconds): The time it takes for a philosopher to eat.
-						During that time, they will need to hold two chopsticks.
-			◦ time_to_sleep (in milliseconds): The time a philosopher will spend sleeping.
-			◦ number_of_times_each_philosopher_must_eat (optional argument): If all philosophers
-						have eaten at least number_of_times_each_philosopher_must_eat times, the simulation stops.
-						If not specified, the simulation stops when a philosopher dies.
-🟢 Study pthread_mutex_lock & pthread_mutex_unlock
-🔵 pthread_join = equivalent of 'wait'
-🟣 Les threads ne sont pas hiérarchisés. Pas de concept de parent/child comme pour les processes
-🟤
-⚫
-⚪
-
-⬇️✅‼️⁉️❓❌Ⓜ️🆓
-*/
-
 # include "philosophers.h"
 
 void	print_yakuzas_status(one_bro *this_yakuza)
@@ -41,7 +18,7 @@ one_bro	*previous_bro(one_bro *this_yakuza, one_bro *previous_yakuza)
 
 	if (this_yakuza->position == 1)
 	{
-		previous_yakuza = backup + 5;		// ou 5 * sizeof(one_bro) is issues
+		previous_yakuza = backup + this_yakuza->total_yakuzas /* x sizeof(one_bro) ? */;
 	}
 	else
 	{
@@ -56,7 +33,7 @@ one_bro	*next_bro(one_bro *this_yakuza, one_bro *next_yakuza)
 
 	if (this_yakuza->position == this_yakuza->total_yakuzas)
 	{
-		next_yakuza = backup - 5;			// ou 5 * sizeof(one_bro) is issues
+		next_yakuza = backup - this_yakuza->total_yakuzas /* x sizeof(one_bro) ? */;
 	}
 	else
 	{
@@ -94,6 +71,17 @@ void	return_chopsticks_and_sleep(one_bro *this_yakuza, one_bro *previous_yakuza,
 	next_yakuza->has_chopstick_left = true;
 }
 
+void	remove_one_chopstick(one_bro *this_yakuza)
+{
+	// Remove for all the ones from the yakuza passed as a parameter + previous ones + next ones
+
+}
+void	add_one_chopstick(one_bro *this_yakuza)
+{
+	// Add for all the ones from the yakuza passed as a parameter + previous ones + next ones
+
+}
+
 void	*chopsticks_party(void *arg)
 {
 	struct one_bro	*this_yakuza = arg;
@@ -122,10 +110,6 @@ void	*chopsticks_party(void *arg)
 	}
 	pthread_mutex_unlock(&this_yakuza->mutual_exclusion);
 
-	// lock
-	// faire fonction 'check if chopsticks available' - check right/left inside
-	// faire fonction 'take right chopstick' & take left - appel : if_right_chopstick_missing, take it + update variables Chopstick right : 1 | Chopstick left 1
-	// unlock
 	// once I have something fonctional, deal with the time related stuff
 
 	return(NULL);
@@ -151,7 +135,7 @@ int	main(int argc, char **argv)
 	while (i < amount_of_yakuzas)
 	{
 		this_yakuza->position = i + 1;
-		this_yakuza->current_state = 'T';			// strdup intead (dans tous) + deal with malloc/free. Back to int ou char si trop relou
+		this_yakuza->current_state = 'T';
 		this_yakuza->has_chopstick_left = false;
 		this_yakuza->has_chopstick_right = false;			// personne n'a de chopstick pour commencer
 		this_yakuza->total_yakuzas = amount_of_yakuzas;

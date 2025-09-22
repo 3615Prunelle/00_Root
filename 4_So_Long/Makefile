@@ -31,7 +31,8 @@ $(NAME): $(OBJS) $(MLX42_LIB) $(LIBFT_LIB) $(PRINTF_LIB) $(GNL_LIB)
 	$(CC) $(OBJS) $(LFLAGS) -o $(NAME)
 
 # Dependency of MLX42 to create the .o, otherwise MLX header is not found during compilation
-%.o: %.c ./MLX42
+# Trick CMakeLists.txt pour éviter soucis de timestamp / relinks
+%.o: %.c ./MLX42/CMakeLists.txt
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # Règle pour cloner ET compiler MLX42
@@ -43,6 +44,9 @@ $(MLX42_LIB): ./MLX42
 ./MLX42:
 	@echo "Cloning MLX42..."
 	@git clone https://github.com/codam-coding-college/MLX42.git
+
+# CMakeLists.txt est créé automatiquement quand MLX42 est cloné
+./MLX42/CMakeLists.txt: ./MLX42
 
 $(LIBFT_LIB):
 	$(MAKE) -C ./libft

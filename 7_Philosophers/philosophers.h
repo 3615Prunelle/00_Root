@@ -42,15 +42,13 @@ typedef struct	one_bro
 	pthread_t		thread_ID;
 	int				position;
 	char			current_state;
-	bool			has_chopstick_left;
-	bool			has_chopstick_right;
+	pthread_mutex_t	right_chopstick;
+	pthread_mutex_t	left_chopstick;
 	int				total_yakuzas;
-	int				*chopsticks_available;
 	unsigned long	time_to_eat;
 	unsigned long	time_to_sleep;
 	unsigned long	time_to_die;
 	int				how_many_meals;					// Optional argument
-	pthread_mutex_t	mutual_exclusion;
 }				one_bro;
 
 // ⚪ Functions signatures - Part 1
