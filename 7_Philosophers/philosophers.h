@@ -5,18 +5,22 @@
 
 // ⚪ #define
 # define NC "\e[0m"
-# define YELLOW "\e[1;33m"
-# define GREEN "\e[1;32m"
 # define BLUE "\e[1;34m"
 # define MAGENTA "\e[1;35m"
+# define YELLOW "\e[1;33m"
 # define RED "\e[1;31m"
+# define GREEN "\e[1;32m"
 # define CYAN "\e[1;36m"
 
-# define AVAILABLE 1
-# define TAKEN 0
+# define LEFT 'l'
+# define RIGHT 'r'
+
+// Later : use ASCII Values otherwise Norminette gives a false positive :
+// "Preprocessor statement must only contain constant defines"
 # define EATING 'E'
 # define THINKING 'T'
 # define SLEEPING 'S'
+# define DYING 'D'
 
 # define ERROR_MESSSAGE_01	"TBD\n"
 
@@ -35,27 +39,29 @@
 # include <limits.h>
 # include <string.h>
 # include <pthread.h>
+#include <sys/time.h>								// For timeval struct
 
 // ⚪ Structs
 typedef struct	one_bro
 {
-	pthread_t		thread_ID;
 	int				position;
+	pthread_t		thread_ID;
 	char			current_state;
-	pthread_mutex_t	right_chopstick;
-	pthread_mutex_t	left_chopstick;
+	pthread_mutex_t	*left_chopstick;
+	pthread_mutex_t	*right_chopstick;
 	int				total_yakuzas;
-	unsigned long	time_to_eat;
-	unsigned long	time_to_sleep;
-	unsigned long	time_to_die;
+	unsigned long	time_to_eat_in_us;
+	unsigned long	time_to_sleep_in_us;
+	unsigned long	time_to_die_in_us;
 	int				how_many_meals;					// Optional argument
 }				one_bro;
 
 // ⚪ Functions signatures - Part 1
-void	*chopsticks_party(void *arg);
+void			*chopsticks_party(void *arg);
+struct timeval	get_time_print_action_set_status(one_bro *this_yakuza, char chopstick, char status);
+
 one_bro	*previous_bro(one_bro *this_yakuza, one_bro	*previous_yakuza);
 one_bro	*next_bro(one_bro *this_yakuza, one_bro	*next_yakuza);
-bool	can_yakuza_eat(one_bro *this_yakuza);
 
 // ⚪ Functions signatures - Part 2
 // ⚪ Clean up functions

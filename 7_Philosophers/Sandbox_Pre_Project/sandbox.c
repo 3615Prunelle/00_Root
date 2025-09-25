@@ -48,6 +48,21 @@ int main(void)
 	pthread_t	ID_1;
 	pthread_t	ID_2;
 	int			integer_to_increment = 1;
+
+//  -------- Test pour connaitre le temps écoulé entre 2 actions -------------------------------------------------------------------------- |
+//		1 second =		1000 milliseconds (ms)
+//		1 millisecond =	1000 microseconds (µs)
+	struct timeval time_stamp1;
+	struct timeval time_stamp2;
+	gettimeofday(&time_stamp1, NULL);
+	usleep(4500);		// 2500 microseconds = 2.5 milliseconds
+	gettimeofday(&time_stamp2, NULL);
+	// Conversion (to the same unity) needed, to add the 2 values together (and also because time2 - time1 in milliseconds can give a negative number)
+	long	conv_from_seconds_to_microseconds = (time_stamp2.tv_sec - time_stamp1.tv_sec) * 1000;
+	double	total_in_microseconds = conv_from_seconds_to_microseconds + (time_stamp2.tv_usec - time_stamp1.tv_usec);
+	printf("Diff in Milliseconds: %.2f\n", total_in_microseconds / 1000);		// 2 digits after coma
+//  --------------------------------------------------------------------------------------------------------------------------------------- |
+
 	pthread_mutex_init(&mutex, NULL);			// Make the mutex possibility available. Useless if used alone, has to be completed by other mutex functions
 
 	printf("%sFirst value is [%d]\n%s", YELLOW, integer_to_increment, NC);
@@ -62,8 +77,8 @@ int main(void)
 	pthread_join(ID_1, NULL);	// Bloque la thread appelant (ici : main) tant que ID_1 n'est pas fini
 	pthread_join(ID_2, NULL);
 
-	printf("%sValue is [%d]\n%s", GREEN, integer_to_increment, NC);
-	printf("%sValue is [%d]\n%s", BLUE, integer_to_increment, NC);
+	// printf("%sValue is [%d]\n%s", GREEN, integer_to_increment, NC);
+	// printf("%sValue is [%d]\n%s", BLUE, integer_to_increment, NC);
 
 	// The 2 threads have been joined (= they finished their execution), nothing else can happen from here
 	pthread_mutex_destroy(&mutex);
@@ -71,7 +86,7 @@ int main(void)
 
 	return (0);
 }
-//  -------- Test pour connaitre le temps écoulé entre 2 actions -------------------------------------------------------------------------- |
+//  -------- Test pour connaitre le temps avant et après une action -------------------------------------------------------------------------- |
 	// struct timeval tv;
 	// gettimeofday(&tv, NULL);
 	// printf("Seconds: %ld, Microseconds: %ld\n", tv.tv_sec, tv.tv_usec);

@@ -44,7 +44,7 @@ LFLAGS =
 # On définit la variable des fichiers sources
 #	The \ at the end of each file is very important (except for the last file), and means all files are on the same line
 #		Retour à la ligne sans \ équivaut à taper sur la touche entrée (not wanted here)
-SRCS = 	philo_main.c \
+SRCS = 	philo_first_try.c \
 
 OBJS = $(SRCS:.c=.o)
 

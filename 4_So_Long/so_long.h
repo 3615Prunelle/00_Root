@@ -6,7 +6,7 @@
 /*   By: schappuy <schappuy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/17 17:07:11 by schappuy          #+#    #+#             */
-/*   Updated: 2025/09/09 14:59:36 by schappuy         ###   ########.fr       */
+/*   Updated: 2025/09/23 17:59:05 by schappuy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,14 +25,14 @@
 # define PATH_WALL "./4_So_Long/textures/ic_Square_Black.png"
 # define PATH_PLAYER "./4_So_Long/textures/ic_Player_Diplo.png"
 # define PATH_COLLEC "./4_So_Long/textures/ic_Collectible_Corn.png"
-# define PATH_ESCAPE "./4_So_Long/textures/ic_Escape_Bike.png"
+# define PATH_ESCAPE "./4_So_Long/textures/ic_Escape_Scooter.png"
  */
 
 # define PATH_GROUND "./textures/ic_Square_Purple.png"
 # define PATH_WALL "./textures/ic_Square_Black.png"
 # define PATH_PLAYER "./textures/ic_Player_Diplo.png"
 # define PATH_COLLEC "./textures/ic_Collectible_Corn.png"
-# define PATH_ESCAPE "./textures/ic_Escape_Bike.png"
+# define PATH_ESCAPE "./textures/ic_Escape_Scooter.png"
 
 # define RIGHT 6
 # define LEFT 4
