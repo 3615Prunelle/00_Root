@@ -50,15 +50,17 @@ typedef struct	one_bro
 	pthread_mutex_t	*left_chopstick;
 	pthread_mutex_t	*right_chopstick;
 	int				total_yakuzas;
-	unsigned long	time_to_eat_in_us;
-	unsigned long	time_to_sleep_in_us;
-	unsigned long	time_to_die_in_us;
+	unsigned long	timestamp_start_dinner_in_millisec;
+	unsigned long	timestamp_last_meal;
+	unsigned long	time_to_eat_in_ms;
+	unsigned long	time_to_sleep_in_ms;
+	unsigned long	time_to_die_in_ms;
 	int				how_many_meals;					// Optional argument
 }				one_bro;
 
 // ⚪ Functions signatures - Part 1
-void			*chopsticks_party(void *arg);
-struct timeval	get_time_print_action_set_status(one_bro *this_yakuza, char chopstick, char status);
+void			*itadakimasu(void *arg);
+struct timeval	get_time_print_action_set_status(one_bro *this_yakuza, char chopstick, char current_status);
 
 one_bro	*previous_bro(one_bro *this_yakuza, one_bro	*previous_yakuza);
 one_bro	*next_bro(one_bro *this_yakuza, one_bro	*next_yakuza);

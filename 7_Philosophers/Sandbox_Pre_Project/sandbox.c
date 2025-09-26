@@ -59,8 +59,8 @@ int main(void)
 	gettimeofday(&time_stamp2, NULL);
 	// Conversion (to the same unity) needed, to add the 2 values together (and also because time2 - time1 in milliseconds can give a negative number)
 	long	conv_from_seconds_to_microseconds = (time_stamp2.tv_sec - time_stamp1.tv_sec) * 1000;
-	double	total_in_microseconds = conv_from_seconds_to_microseconds + (time_stamp2.tv_usec - time_stamp1.tv_usec);
-	printf("Diff in Milliseconds: %.2f\n", total_in_microseconds / 1000);		// 2 digits after coma
+	double	timestamp_in_millisec = conv_from_seconds_to_microseconds + (time_stamp2.tv_usec - time_stamp1.tv_usec);
+	printf("Diff in Milliseconds: %.2f\n", timestamp_in_millisec / 1000);		// 2 digits after coma
 //  --------------------------------------------------------------------------------------------------------------------------------------- |
 
 	pthread_mutex_init(&mutex, NULL);			// Make the mutex possibility available. Useless if used alone, has to be completed by other mutex functions
