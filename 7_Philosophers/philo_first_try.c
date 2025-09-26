@@ -32,22 +32,28 @@ void	*itadakimasu(void *arg)
 
 	while((this_yakuza->current_state == THINKING) && (this_yakuza->how_many_meals > 0))				// Add && if he's been thinking for less than N time. Otherwise he dies (else condition)
 	{
+		// isues with short life input (4 310 200 100 3)
+		// ne pas toujours les prendre dans l'ordre car ça peut générer des attentes évitables (?)
+		// mais no way to know which one is unlocked - Have to wait
+
 		pthread_mutex_lock(this_yakuza->left_chopstick);
-		get_time_print_action_set_status(this_yakuza, LEFT, THINKING);
+		get_time_print_action_set_status(this_yakuza, LEFT, this_yakuza->current_state);
 
 		pthread_mutex_lock(this_yakuza->right_chopstick);
-		get_time_print_action_set_status(this_yakuza, RIGHT, THINKING);
+		get_time_print_action_set_status(this_yakuza, RIGHT, this_yakuza->current_state);
 
-		get_time_print_action_set_status(this_yakuza, '-', EATING);
+		get_time_print_action_set_status(this_yakuza, BOTH, this_yakuza->current_state);
 
 		pthread_mutex_unlock(this_yakuza->left_chopstick);
-		// return time dans get_time_print_action_set_status pour calculer duree des actions
-		// print "Yak X has been eating/sleeping/thinking for X milliseconds"
 		pthread_mutex_unlock(this_yakuza->right_chopstick);
 
-		get_time_print_action_set_status(this_yakuza, '-', SLEEPING);
-		get_time_print_action_set_status(this_yakuza, '-', THINKING);
+		// faire en sorte qu'un yakuza puisse récupérer le lock à peine libéré avant d'exécuter les deux lignes suivantes ?
+		// get_time_print_action_set_status(this_yakuza, NONE, this_yakuza->current_state);
+		// get_time_print_action_set_status(this_yakuza, NONE, this_yakuza->current_state);
 	}
+	// not ok car les yakuzas sortent de la boucle après un seul repas - Remédier à ça
+	get_time_print_action_set_status(this_yakuza, NONE, this_yakuza->current_state);
+	get_time_print_action_set_status(this_yakuza, NONE, this_yakuza->current_state);
 	return(NULL);				// Change arg in calling function if a return ptr is needed
 }
 
@@ -60,7 +66,7 @@ struct timeval	get_time_print_action_set_status(one_bro *this_yakuza, char chops
 		unsigned long	timestamp_in_millisec = (time_stamp.tv_sec * 1000) + (time_stamp.tv_usec / 1000);
 		unsigned long	since_start = timestamp_in_millisec - this_yakuza->timestamp_start_dinner_in_millisec;
 
-		if ((timestamp_in_millisec - this_yakuza->timestamp_last_meal) >= this_yakuza->time_to_die_in_ms)
+		if ((this_yakuza->current_state != DYING) && ((timestamp_in_millisec - this_yakuza->timestamp_last_meal) >= this_yakuza->time_to_die_in_ms))
 		{
 			printf("%sYakuza %d died because she hasn't eaten since %lu milliseconds\n%s", RED, this_yakuza->position, timestamp_in_millisec - this_yakuza->timestamp_last_meal, NC);
 			// printf("Milliseconds: %lu - Yakuza %d is dying\n", timestamp_in_millisec / 1000, this_yakuza->position);
@@ -76,7 +82,7 @@ struct timeval	get_time_print_action_set_status(one_bro *this_yakuza, char chops
 			printf("Yakuza %d took right chopstick [mutex %p] %lu milliseconds after her last meal\n", this_yakuza->position, this_yakuza->right_chopstick, timestamp_in_millisec - this_yakuza->timestamp_last_meal);
 			// printf("Milliseconds: %lu - Yakuza %d took right chopstick\n", timestamp_in_millisec, this_yakuza->position);
 		}
-		else if (current_status == EATING)
+		else if ((chopstick == BOTH) && (current_status == THINKING))
 		{
 			this_yakuza->current_state = EATING;
 			printf("%sYakuza %d started eating %lu milliseconds after her last meal\n%s", GREEN, this_yakuza->position, timestamp_in_millisec - this_yakuza->timestamp_last_meal, NC);
@@ -84,19 +90,21 @@ struct timeval	get_time_print_action_set_status(one_bro *this_yakuza, char chops
 			// printf("%sMilliseconds: %lu - Yakuza %d is eating\n%s", GREEN, timestamp_in_millisec, this_yakuza->position, NC);
 			this_yakuza->how_many_meals--;
 			usleep(this_yakuza->time_to_eat_in_ms * 1000);
+			printf("%sYakuza %d is about to release both chopsticks\n%s", GREEN, this_yakuza->position, NC);
+
+		}
+		else if (current_status == EATING)
+		{
+			this_yakuza->current_state = SLEEPING;
+			printf("%sYakuza %d started sleeping %lu milliseconds after her last meal\n%s", BLUE, this_yakuza->position, timestamp_in_millisec - this_yakuza->timestamp_last_meal, NC);
+			// printf("Milliseconds: %lu - Yakuza %d is sleeping\n", timestamp_in_millisec / 1000, this_yakuza->position);
+			usleep(this_yakuza->time_to_sleep_in_ms * 1000);
 		}
 		else if (current_status == SLEEPING)
 		{
-			printf("%sYakuza %d started sleeping %lu milliseconds after her last meal\n%s", BLUE, this_yakuza->position, timestamp_in_millisec - this_yakuza->timestamp_last_meal, NC);
-			// printf("Milliseconds: %lu - Yakuza %d is sleeping\n", timestamp_in_millisec / 1000, this_yakuza->position);
-			this_yakuza->current_state = SLEEPING;
-			usleep(this_yakuza->time_to_sleep_in_ms * 1000);
-		}
-		else if (current_status == THINKING)
-		{
+			this_yakuza->current_state = THINKING;
 			printf("%sYakuza %d started thinking %lu milliseconds after her last meal\n%s", CYAN, this_yakuza->position, timestamp_in_millisec - this_yakuza->timestamp_last_meal, NC);
 			// printf("Milliseconds: %lu - Yakuza %d is thinking\n", timestamp_in_millisec / 1000, this_yakuza->position);
-			this_yakuza->current_state = THINKING;
 		}
 //		printf("%sTime Stamp beginning of party : %lu\n%s", MAGENTA, this_yakuza->timestamp_start_dinner_in_millisec, NC);
 //		printf("%sTime Stamp last meal Yakuza %d : %lu\n%s", MAGENTA, this_yakuza->position, this_yakuza->timestamp_last_meal, NC);
@@ -105,6 +113,8 @@ struct timeval	get_time_print_action_set_status(one_bro *this_yakuza, char chops
 }
 
 // Quand je tiens un truc fonctionnel, faire les verif d'inputs
+// si un seul philo, erreur ou le faire mourrir direct ?
+// victory msg "no one died ! \o/ " ?
 // ⁉️ Idea : use linked list (round) instead of arrays ?
 int	main(int argc, char **argv)
 {
@@ -151,6 +161,8 @@ int	main(int argc, char **argv)
 		this_yakuza->total_yakuzas = amount_of_yakuzas;
 		this_yakuza->timestamp_start_dinner_in_millisec = dinner_starts_now_in_millisec;
 		this_yakuza->timestamp_last_meal = dinner_starts_now_in_millisec;
+		this_yakuza->has_right_chopstick = false;
+		this_yakuza->has_left_chopstick = false;
 		this_yakuza->time_to_eat_in_ms = time_to_eat_input;
 		this_yakuza->time_to_sleep_in_ms = time_to_sleep_input;
 		this_yakuza->time_to_die_in_ms = time_to_die_input;

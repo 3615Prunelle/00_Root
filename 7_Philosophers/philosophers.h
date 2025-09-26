@@ -14,6 +14,8 @@
 
 # define LEFT 'l'
 # define RIGHT 'r'
+# define BOTH 'b'
+# define NONE '-'
 
 // Later : use ASCII Values otherwise Norminette gives a false positive :
 // "Preprocessor statement must only contain constant defines"
@@ -52,6 +54,8 @@ typedef struct	one_bro
 	int				total_yakuzas;
 	unsigned long	timestamp_start_dinner_in_millisec;
 	unsigned long	timestamp_last_meal;
+	bool			has_right_chopstick;
+	bool			has_left_chopstick;
 	unsigned long	time_to_eat_in_ms;
 	unsigned long	time_to_sleep_in_ms;
 	unsigned long	time_to_die_in_ms;
