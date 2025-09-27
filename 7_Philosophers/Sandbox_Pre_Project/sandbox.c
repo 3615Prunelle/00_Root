@@ -49,6 +49,11 @@ int main(void)
 	pthread_t	ID_2;
 	int			integer_to_increment = 1;
 
+/* 	long unsigned int test = 999999;
+	long unsigned int test1 = test / 1000 /2;
+	printf("Test is : %lu\n", test / 1000 / 2);
+	printf("Test is : %lu\n", test1); */
+
 //  -------- Test pour connaitre le temps écoulé entre 2 actions -------------------------------------------------------------------------- |
 //		1 second =		1000 milliseconds (ms)
 //		1 millisecond =	1000 microseconds (µs)

@@ -22,7 +22,7 @@
 # define EATING 'E'
 # define THINKING 'T'
 # define SLEEPING 'S'
-# define DYING 'D'
+# define DEAD 'D'
 
 # define ERROR_MESSSAGE_01	"TBD\n"
 
