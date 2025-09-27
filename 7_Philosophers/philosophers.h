@@ -70,21 +70,17 @@ typedef struct	one_bro
 	pthread_mutex_t		*left_chopstick;
 	pthread_mutex_t		*right_chopstick;
 	int					total_yakuzas;
-	bool				has_right_chopstick;
-	bool				has_left_chopstick;
 	int					how_many_meals;					// Optional argument
-	time_related_data	all;
+	time_related_data	TRD;
 }				one_bro;
 
 
 
 // ⚪ Functions signatures - Part 1
-void			*itadakimasu(void *arg);
-struct timeval	get_time_print_action_set_status(one_bro *this_yakuza, char chopstick, char current_status);
-
-unsigned long	convert_timestamp_to_long(one_bro *this_yakuza);		// Second Try
-void			take_chopsticks_till_sleep(one_bro *this_yakuza);		// Second Try
-void			sleep_till_think(one_bro *this_yakuza);					// Second Try
+void	*itadakimasu(void *arg);
+void	update_time_struct(one_bro *this_yakuza, bool update_meal_timestamp);	// V2
+void	take_chopsticks_till_sleep(one_bro *this_yakuza);						// V2
+void	sleep_till_think(one_bro *this_yakuza);									// V2
 
 // ⚪ Functions signatures - Part 2
 // ⚪ Clean up functions

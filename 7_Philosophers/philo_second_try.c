@@ -25,14 +25,15 @@
 
 void	*itadakimasu(void *arg)
 {
+	//	pthread_t		current_thread = pthread_self();	// Useless, as we can access it via struct - Keep for debug ?
+	//	printf("%sCurrent Yakuza in the itadakimasu function : ID [%lu]\n%s", MAGENTA, current_thread, NC);
 	struct one_bro	*this_yakuza = arg;
-	pthread_t		current_thread = pthread_self();	// Useless, as we can access it via struct - Keep for debug ?
 
-//	printf("%sCurrent Yakuza in the itadakimasu function : ID [%lu]\n%s", MAGENTA, current_thread, NC);
+	update_time_struct(this_yakuza, true);					// Had to add this line to update time diff between start & meal
 
 	while (this_yakuza->how_many_meals > 0)
 	{
-		if (this_yakuza->current_state == THINKING)		// If instead of while ?
+		if (this_yakuza->current_state == THINKING)
 		{
 			take_chopsticks_till_sleep(this_yakuza);
 			sleep_till_think(this_yakuza);
@@ -42,71 +43,71 @@ void	*itadakimasu(void *arg)
 			break;
 		}
 	}
-	return(NULL);				// Change arg in calling function if a return ptr is needed
+//	return(NULL);				// Change arg in calling function if a return ptr is needed
 }
-
-unsigned long	convert_timestamp_to_long(one_bro *this_yakuza)
+// FYI - Max useconds is 999 999 (so almost 1 sec)
+// Cropped = ne garder que les 5 derniers chiffres des millisecondes sinon relou pour debug
+void	update_time_struct(one_bro *this_yakuza, bool update_meal_timestamp)
 {
 	struct timeval time_stamp;
 	gettimeofday(&time_stamp, NULL);
-	// FYI - Max useconds is 999 999 (so almost 1 sec)
-	// time_stamp.tv_sec donne les secondes passées depuis l'époque Unix (1970)
-	unsigned long	timestamp_in_millisec = (time_stamp.tv_sec * 1000) + (time_stamp.tv_usec / 1000);
-//	unsigned long	since_start = timestamp_in_millisec - this_yakuza->timestamp_start_dinner_in_millisec;
+	unsigned long	millisec_timestamp = (time_stamp.tv_sec * 1000) + (time_stamp.tv_usec / 1000);
 
-	unsigned long	cropped = timestamp_in_millisec % 10000;	// ne garder que les 4 derniers chiffres sinon relou pour debug
-	return(cropped);
-}
+	this_yakuza->TRD.millisec_timestamp_now = millisec_timestamp;
+	this_yakuza->TRD.millisec_cropped_now = millisec_timestamp % 10000;
 
-void			take_chopsticks_till_sleep(one_bro *this_yakuza)
-{
-	unsigned long	timestamp_in_millisec = convert_timestamp_to_long(this_yakuza);
-	unsigned long	debug = timestamp_in_millisec - this_yakuza->timestamp_last_meal;
-
-	if ((this_yakuza->current_state != DEAD) && ((timestamp_in_millisec - this_yakuza->timestamp_last_meal) >= this_yakuza->time_to_die_in_ms))
+	if(update_meal_timestamp)
 	{
-		printf("%sYakuza %d died because she hasn't eaten since %lu milliseconds\n%s", RED, this_yakuza->position, timestamp_in_millisec - this_yakuza->timestamp_last_meal, NC);
-		// printf("Milliseconds: %lu - Yakuza %d is dying\n", timestamp_in_millisec / 1000, this_yakuza->position);
+		this_yakuza->TRD.millisec_timestamp_last_meal = millisec_timestamp;
+		this_yakuza->TRD.millisec_cropped_last_meal = millisec_timestamp % 10000;
+	}
+	this_yakuza->TRD.millisec_elapsed_since_last_meal = millisec_timestamp - (this_yakuza->TRD.millisec_timestamp_last_meal);
+
+	if ((this_yakuza->current_state != DEAD) && ((this_yakuza->TRD.millisec_elapsed_since_last_meal) >= this_yakuza->TRD.time_to_die_in_ms))
+	{
+		printf("%sYakuza %d died because she hasn't eaten since %lu milliseconds\n%s", RED, this_yakuza->position, this_yakuza->TRD.millisec_elapsed_since_last_meal, NC);
+		// printf("Milliseconds: %lu - Yakuza %d is dying\n", millisec_timestamp / 1000, this_yakuza->position);
 		this_yakuza->current_state = DEAD;
 	}
+}
+
+void	take_chopsticks_till_sleep(one_bro *this_yakuza)
+{
+	update_time_struct(this_yakuza, false);						// Useless because duplicates init in main TBC - Try without
 
 	pthread_mutex_lock(this_yakuza->left_chopstick);
-	printf("Yakuza %d took left chopstick [mutex %p] %lu milliseconds after her last meal\n", this_yakuza->position, this_yakuza->left_chopstick, timestamp_in_millisec - this_yakuza->timestamp_last_meal);
+	update_time_struct(this_yakuza, false);
+	printf("Yakuza %d took left chopstick [mutex %p] %lu milliseconds after her last meal\tCropped TS : %lu\n", this_yakuza->position, this_yakuza->left_chopstick, this_yakuza->TRD.millisec_elapsed_since_last_meal, this_yakuza->TRD.millisec_cropped_now);
 
-	timestamp_in_millisec = convert_timestamp_to_long(this_yakuza);
 	pthread_mutex_lock(this_yakuza->right_chopstick);
-	printf("Yakuza %d took right chopstick [mutex %p] %lu milliseconds after her last meal\n", this_yakuza->position, this_yakuza->right_chopstick, timestamp_in_millisec - this_yakuza->timestamp_last_meal);
+	update_time_struct(this_yakuza, false);						// Keep, as Yak sometimes waits before that chopstick is available
+	printf("Yakuza %d took right chopstick [mutex %p] %lu milliseconds after her last meal\tCropped TS : %lu\n", this_yakuza->position, this_yakuza->right_chopstick, this_yakuza->TRD.millisec_elapsed_since_last_meal, this_yakuza->TRD.millisec_cropped_now);
 
 	this_yakuza->current_state = EATING;
-	timestamp_in_millisec = convert_timestamp_to_long(this_yakuza);
-	printf("%sYakuza %d started eating %lu milliseconds after her last meal\n%s", GREEN, this_yakuza->position, timestamp_in_millisec - this_yakuza->timestamp_last_meal, NC);
-	// printf("%sMilliseconds: %lu - Yakuza %d is eating\n%s", GREEN, timestamp_in_millisec, this_yakuza->position, NC);
-	this_yakuza->timestamp_last_meal = timestamp_in_millisec;
+	printf("%sYakuza %d started eating %lu milliseconds after her last meal\t\t\t\tCropped TS : %lu\n%s", GREEN, this_yakuza->position, this_yakuza->TRD.millisec_elapsed_since_last_meal, this_yakuza->TRD.millisec_cropped_now, NC);
+	// printf("%sMilliseconds: %lu - Yakuza %d is eating\n%s", GREEN, millisec_timestamp, this_yakuza->position, NC);
+	update_time_struct(this_yakuza, true);
 	this_yakuza->how_many_meals--;
-	usleep(this_yakuza->time_to_eat_in_ms * 1000);
-	printf("%sYakuza %d is about to release both chopsticks - %d meals left\n%s", GREEN, this_yakuza->position, this_yakuza->how_many_meals, NC);
+	usleep(this_yakuza->TRD.time_to_eat_in_ms * 1000);
+
+	update_time_struct(this_yakuza, false);
+	printf("%sYakuza %d is about to release both chopsticks - %d meals left\t\t\t\tCropped TS : %lu\n%s", GREEN, this_yakuza->position, this_yakuza->how_many_meals, this_yakuza->TRD.millisec_cropped_now, NC);
 	pthread_mutex_unlock(this_yakuza->left_chopstick);
 	pthread_mutex_unlock(this_yakuza->right_chopstick);
 	this_yakuza->current_state = SLEEPING;
 }
 
-void			sleep_till_think(one_bro *this_yakuza)
+void	sleep_till_think(one_bro *this_yakuza)
 {
-	unsigned long	timestamp_in_millisec = convert_timestamp_to_long(this_yakuza);
+	update_time_struct(this_yakuza, false);
 
-	if ((this_yakuza->current_state != DEAD) && ((timestamp_in_millisec - this_yakuza->timestamp_last_meal) >= this_yakuza->time_to_die_in_ms))
-	{
-		printf("%sYakuza %d died because she hasn't eaten since %lu milliseconds\n%s", RED, this_yakuza->position, timestamp_in_millisec - this_yakuza->timestamp_last_meal, NC);
-		// printf("Milliseconds: %lu - Yakuza %d is dying\n", timestamp_in_millisec / 1000, this_yakuza->position);
-		this_yakuza->current_state = DEAD;
-	}
-
-	printf("%sYakuza %d started sleeping %lu milliseconds after her last meal\n%s", BLUE, this_yakuza->position, timestamp_in_millisec - this_yakuza->timestamp_last_meal, NC);
-	// printf("Milliseconds: %lu - Yakuza %d is sleeping\n", timestamp_in_millisec / 1000, this_yakuza->position);
-	usleep(this_yakuza->time_to_sleep_in_ms * 1000);
+	printf("%sYakuza %d started sleeping %lu milliseconds after her last meal\t\t\t\tCropped TS : %lu\n%s", BLUE, this_yakuza->position, this_yakuza->TRD.millisec_elapsed_since_last_meal, this_yakuza->TRD.millisec_cropped_now, NC);
+	// printf("Milliseconds: %lu - Yakuza %d is sleeping\n", millisec_timestamp / 1000, this_yakuza->position);
+	usleep(this_yakuza->TRD.time_to_sleep_in_ms * 1000);
+	update_time_struct(this_yakuza, false);
 	this_yakuza->current_state = THINKING;
-	printf("%sYakuza %d started thinking %lu milliseconds after her last meal\n%s", CYAN, this_yakuza->position, timestamp_in_millisec - this_yakuza->timestamp_last_meal, NC);
-	// printf("Milliseconds: %lu - Yakuza %d is thinking\n", timestamp_in_millisec / 1000, this_yakuza->position);
+	printf("%sYakuza %d started thinking %lu milliseconds after her last meal\t\t\t\tCropped TS : %lu\n%s", CYAN, this_yakuza->position, this_yakuza->TRD.millisec_elapsed_since_last_meal, this_yakuza->TRD.millisec_cropped_now, NC);
+	// printf("Milliseconds: %lu - Yakuza %d is thinking\n", millisec_timestamp / 1000, this_yakuza->position);
 }
 
 // Quand je tiens un truc fonctionnel, faire les verif d'inputs
@@ -114,12 +115,12 @@ void			sleep_till_think(one_bro *this_yakuza)
 // victory msg "no one died ! \o/ " ?
 // If no optional argument is provided (amount of meals), the simulation stops when a philosopher dies
 // ⁉️ Idea : use linked list (round) instead of arrays ?
-int	main(int argc, char **argv)
+int		main(int argc, char **argv)
 {
 	int				amount_of_yakuzas = atoi(argv[1]);							// Fonction pas autorisee, c/c celle de ma libft later
 	unsigned long	time_to_die_input = atoi(argv[2]);
 	unsigned long	time_to_eat_input = atoi(argv[3]);
-	unsigned long	time_to_sleep_input= atoi(argv[4]);
+	unsigned long	time_to_sleep_input = atoi(argv[4]);
 	int				number_of_times_each_philosopher_must_eat= atoi(argv[5]);	// Optional argument
 	int 			i = 0;
 
@@ -139,7 +140,7 @@ int	main(int argc, char **argv)
 
 	struct timeval now;
 	gettimeofday(&now, NULL);
-	unsigned long	dinner_starts_now_in_millisec = (now.tv_sec * 1000) + (now.tv_usec / 1000);
+	unsigned long	now_in_millisec = (now.tv_sec * 1000) + (now.tv_usec / 1000);
 
 	while (i < amount_of_yakuzas)
 	{
@@ -157,14 +158,22 @@ int	main(int argc, char **argv)
 			this_yakuza->right_chopstick = &all_chopsticks[i + 1];
 		}
 		this_yakuza->total_yakuzas = amount_of_yakuzas;
-		this_yakuza->timestamp_start_dinner_in_millisec = dinner_starts_now_in_millisec;
-		this_yakuza->timestamp_last_meal = dinner_starts_now_in_millisec;
-		this_yakuza->has_right_chopstick = false;
-		this_yakuza->has_left_chopstick = false;
-		this_yakuza->time_to_eat_in_ms = time_to_eat_input;
-		this_yakuza->time_to_sleep_in_ms = time_to_sleep_input;
-		this_yakuza->time_to_die_in_ms = time_to_die_input;
 		this_yakuza->how_many_meals = number_of_times_each_philosopher_must_eat;
+
+		this_yakuza->TRD.millisec_timestamp_start_dinner = now_in_millisec;
+		this_yakuza->TRD.millisec_cropped_start_dinner = now_in_millisec % 10000;
+
+		this_yakuza->TRD.millisec_timestamp_now = now_in_millisec;
+		this_yakuza->TRD.millisec_cropped_now = now_in_millisec % 10000;
+
+		this_yakuza->TRD.millisec_timestamp_last_meal = now_in_millisec;
+		this_yakuza->TRD.millisec_cropped_last_meal = now_in_millisec % 10000;
+
+		this_yakuza->TRD.millisec_elapsed_since_last_meal = 0;
+
+		this_yakuza->TRD.time_to_eat_in_ms = time_to_eat_input;
+		this_yakuza->TRD.time_to_sleep_in_ms = time_to_sleep_input;
+		this_yakuza->TRD.time_to_die_in_ms = time_to_die_input;
 		this_yakuza++;
 		i++;
 	}
