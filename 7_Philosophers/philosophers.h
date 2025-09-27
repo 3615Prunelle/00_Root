@@ -44,30 +44,47 @@
 #include <sys/time.h>								// For timeval struct
 
 // ⚪ Structs
-typedef struct	one_bro
+typedef struct	time_related_data
 {
-	int				position;
-	pthread_t		thread_ID;
-	char			current_state;
-	pthread_mutex_t	*left_chopstick;
-	pthread_mutex_t	*right_chopstick;
-	int				total_yakuzas;
-	unsigned long	timestamp_start_dinner_in_millisec;
-	unsigned long	timestamp_last_meal;
-	bool			has_right_chopstick;
-	bool			has_left_chopstick;
+	unsigned long	millisec_timestamp_start_dinner;
+	unsigned long	millisec_cropped_start_dinner;
+
+	unsigned long	millisec_timestamp_now;
+	unsigned long	millisec_cropped_now;
+
+	unsigned long	millisec_timestamp_last_meal;
+	unsigned long	millisec_cropped_last_meal;
+
+	unsigned long	millisec_elapsed_since_last_meal;
+
 	unsigned long	time_to_eat_in_ms;
 	unsigned long	time_to_sleep_in_ms;
 	unsigned long	time_to_die_in_ms;
-	int				how_many_meals;					// Optional argument
+}				time_related_data;
+
+typedef struct	one_bro
+{
+	int					position;
+	pthread_t			thread_ID;
+	char				current_state;
+	pthread_mutex_t		*left_chopstick;
+	pthread_mutex_t		*right_chopstick;
+	int					total_yakuzas;
+	bool				has_right_chopstick;
+	bool				has_left_chopstick;
+	int					how_many_meals;					// Optional argument
+	time_related_data	all;
 }				one_bro;
+
+
 
 // ⚪ Functions signatures - Part 1
 void			*itadakimasu(void *arg);
 struct timeval	get_time_print_action_set_status(one_bro *this_yakuza, char chopstick, char current_status);
 
-one_bro	*previous_bro(one_bro *this_yakuza, one_bro	*previous_yakuza);
-one_bro	*next_bro(one_bro *this_yakuza, one_bro	*next_yakuza);
+unsigned long	convert_timestamp_to_long(one_bro *this_yakuza);		// Second Try
+void			take_chopsticks_till_sleep(one_bro *this_yakuza);		// Second Try
+void			sleep_till_think(one_bro *this_yakuza);					// Second Try
 
 // ⚪ Functions signatures - Part 2
 // ⚪ Clean up functions
