@@ -66,7 +66,7 @@ typedef struct	one_bro
 {
 	int					position;
 	pthread_t			thread_ID;
-	char				current_state;
+	char				current_state;					// study enum instead of char - To Do 01/10
 	pthread_mutex_t		*left_chopstick;
 	pthread_mutex_t		*right_chopstick;
 	int					total_yakuzas;
@@ -78,7 +78,7 @@ typedef struct	one_bro
 
 // ⚪ Functions signatures - Part 1
 void	*itadakimasu(void *arg);
-void	update_time_struct(one_bro *this_yakuza, bool update_meal_timestamp);	// V2
+bool	check_if_alive_and_update_time_struct(one_bro *this_yakuza, bool update_meal_timestamp);	// V2
 void	take_chopsticks_till_sleep(one_bro *this_yakuza);						// V2
 void	sleep_till_think(one_bro *this_yakuza);									// V2
 

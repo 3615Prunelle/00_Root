@@ -1,26 +1,3 @@
-/* Notes random
-🔴 Philosophers = Processes (NB : Processes are composed of one or multiple threads, and treads are composed of instructions). But NB : One thread = one process
-🟠 Chopsticks = Ressources that have to be shared between processes (but one at a time)
-🟡 Your program(s) must take the following arguments:
-			◦ number_of_philosophers: The number of philosophers and also the number of chopsticks.
-			◦ time_to_die (in milliseconds): If a philosopher has not started eating within time_to_die_in_ms milliseconds since
-						the start of their last meal or the start of the simulation, they die.
-			◦ time_to_eat (in milliseconds): The time it takes for a philosopher to eat.
-						During that time, they will need to hold two chopsticks.
-			◦ time_to_sleep (in milliseconds): The time a philosopher will spend sleeping.
-			◦ number_of_times_each_philosopher_must_eat (optional argument): If all philosophers
-						have eaten at least number_of_times_each_philosopher_must_eat times, the simulation stops.
-						If not specified, the simulation stops when a philosopher dies.
-🟢 One chopstick = One lock
-🔵 pthread_join = equivalent of 'wait'
-🟣 Les threads ne sont pas hiérarchisés. Pas de concept de parent/child comme pour les processes
-🟤 Mutex = Lock&Unlock are right before/after a part of code that I want to protect from other threads executing it at the same time
-⚫ 1 thread = 1 yakuza
-⚪ 1 mutex = 1 chopstick
-
-⬇️✅‼️⁉️❓❌Ⓜ️🆓
-*/
-
 # include "philosophers.h"
 
 void	*itadakimasu(void *arg)
@@ -29,14 +6,19 @@ void	*itadakimasu(void *arg)
 	//	printf("%sCurrent Yakuza in the itadakimasu function : ID [%lu]\n%s", MAGENTA, current_thread, NC);
 	struct one_bro	*this_yakuza = arg;
 
-	update_time_struct(this_yakuza, true);					// Had to add this line to update time diff between start & meal
+	check_if_alive_and_update_time_struct(this_yakuza, true);					// Had to add this line to update time diff between start & meal
+
+// Add priority for the cases there are lots of philosophers
 
 	while (this_yakuza->how_many_meals > 0)
 	{
-		if (this_yakuza->current_state == THINKING)
+		if (this_yakuza->current_state == THINKING)			// Useless
 		{
 			take_chopsticks_till_sleep(this_yakuza);
-			sleep_till_think(this_yakuza);
+			if(this_yakuza->current_state == SLEEPING)
+			{
+				sleep_till_think(this_yakuza);
+			}
 		}
 		else
 		{
@@ -47,7 +29,7 @@ void	*itadakimasu(void *arg)
 }
 // FYI - Max useconds is 999 999 (so almost 1 sec)
 // Cropped = ne garder que les 5 derniers chiffres des millisecondes sinon relou pour debug
-void	update_time_struct(one_bro *this_yakuza, bool update_meal_timestamp)
+bool	check_if_alive_and_update_time_struct(one_bro *this_yakuza, bool update_meal_timestamp)
 {
 	struct timeval time_stamp;
 	gettimeofday(&time_stamp, NULL);
@@ -68,30 +50,55 @@ void	update_time_struct(one_bro *this_yakuza, bool update_meal_timestamp)
 		printf("%sYakuza %d died because she hasn't eaten since %lu milliseconds\n%s", RED, this_yakuza->position, this_yakuza->TRD.millisec_elapsed_since_last_meal, NC);
 		// printf("Milliseconds: %lu - Yakuza %d is dying\n", millisec_timestamp / 1000, this_yakuza->position);
 		this_yakuza->current_state = DEAD;
+		return(false);
 	}
+	return(true);
 }
 
 void	take_chopsticks_till_sleep(one_bro *this_yakuza)
 {
-	update_time_struct(this_yakuza, false);						// Useless because duplicates init in main TBC - Try without
-
+	if (!check_if_alive_and_update_time_struct(this_yakuza, false))		// Useless because duplicates init in main TBC - Try without
+	{
+		return;
+	}
 	pthread_mutex_lock(this_yakuza->left_chopstick);
-	update_time_struct(this_yakuza, false);
+// 01/10 - Logique pair / impair avec release des chopsticks
+// piste a explorer : mutex en plus ?
+	if (!check_if_alive_and_update_time_struct(this_yakuza, false))
+	{
+		pthread_mutex_unlock(this_yakuza->left_chopstick);				// Check si possible de liberer plus haut 01/10
+		return;
+	}
 	printf("Yakuza %d took left chopstick [mutex %p] %lu milliseconds after her last meal\tCropped TS : %lu\n", this_yakuza->position, this_yakuza->left_chopstick, this_yakuza->TRD.millisec_elapsed_since_last_meal, this_yakuza->TRD.millisec_cropped_now);
 
 	pthread_mutex_lock(this_yakuza->right_chopstick);
-	update_time_struct(this_yakuza, false);						// Keep, as Yak sometimes waits before that chopstick is available
+	if (!check_if_alive_and_update_time_struct(this_yakuza, false))		// Keep, as Yak sometimes waits before that chopstick is available
+	{
+		pthread_mutex_unlock(this_yakuza->left_chopstick);				// Check si possible de liberer plus haut 01/10
+		pthread_mutex_unlock(this_yakuza->right_chopstick);
+		return;
+	}
 	printf("Yakuza %d took right chopstick [mutex %p] %lu milliseconds after her last meal\tCropped TS : %lu\n", this_yakuza->position, this_yakuza->right_chopstick, this_yakuza->TRD.millisec_elapsed_since_last_meal, this_yakuza->TRD.millisec_cropped_now);
 
 	this_yakuza->current_state = EATING;
 	printf("%sYakuza %d started eating %lu milliseconds after her last meal\t\t\t\tCropped TS : %lu\n%s", GREEN, this_yakuza->position, this_yakuza->TRD.millisec_elapsed_since_last_meal, this_yakuza->TRD.millisec_cropped_now, NC);
 	// printf("%sMilliseconds: %lu - Yakuza %d is eating\n%s", GREEN, millisec_timestamp, this_yakuza->position, NC);
-	update_time_struct(this_yakuza, true);
+	if (!check_if_alive_and_update_time_struct(this_yakuza, true))
+	{
+		pthread_mutex_unlock(this_yakuza->left_chopstick);				// Check si possible de liberer plus haut 01/10
+		pthread_mutex_unlock(this_yakuza->right_chopstick);
+		return;
+	}
 	this_yakuza->how_many_meals--;
 	usleep(this_yakuza->TRD.time_to_eat_in_ms * 1000);
 
-	update_time_struct(this_yakuza, false);
-	printf("%sYakuza %d is about to release both chopsticks - %d meals left\t\t\t\tCropped TS : %lu\n%s", GREEN, this_yakuza->position, this_yakuza->how_many_meals, this_yakuza->TRD.millisec_cropped_now, NC);
+	if (!check_if_alive_and_update_time_struct(this_yakuza, false))
+	{
+		pthread_mutex_unlock(this_yakuza->left_chopstick);				// Check si possible de liberer plus haut 01/10
+		pthread_mutex_unlock(this_yakuza->right_chopstick);
+		return;
+	}
+	printf("%sYakuza %d is about to release both chopsticks - %d meals left\t\t\t\tCropped TS : %lu\n%s", YELLOW, this_yakuza->position, this_yakuza->how_many_meals, this_yakuza->TRD.millisec_cropped_now, NC);
 	pthread_mutex_unlock(this_yakuza->left_chopstick);
 	pthread_mutex_unlock(this_yakuza->right_chopstick);
 	this_yakuza->current_state = SLEEPING;
@@ -99,12 +106,17 @@ void	take_chopsticks_till_sleep(one_bro *this_yakuza)
 
 void	sleep_till_think(one_bro *this_yakuza)
 {
-	update_time_struct(this_yakuza, false);
-
+	if (!check_if_alive_and_update_time_struct(this_yakuza, false))
+	{
+		return;
+	}
 	printf("%sYakuza %d started sleeping %lu milliseconds after her last meal\t\t\t\tCropped TS : %lu\n%s", BLUE, this_yakuza->position, this_yakuza->TRD.millisec_elapsed_since_last_meal, this_yakuza->TRD.millisec_cropped_now, NC);
 	// printf("Milliseconds: %lu - Yakuza %d is sleeping\n", millisec_timestamp / 1000, this_yakuza->position);
 	usleep(this_yakuza->TRD.time_to_sleep_in_ms * 1000);
-	update_time_struct(this_yakuza, false);
+	if (!check_if_alive_and_update_time_struct(this_yakuza, false))
+	{
+		return;
+	}
 	this_yakuza->current_state = THINKING;
 	printf("%sYakuza %d started thinking %lu milliseconds after her last meal\t\t\t\tCropped TS : %lu\n%s", CYAN, this_yakuza->position, this_yakuza->TRD.millisec_elapsed_since_last_meal, this_yakuza->TRD.millisec_cropped_now, NC);
 	// printf("Milliseconds: %lu - Yakuza %d is thinking\n", millisec_timestamp / 1000, this_yakuza->position);
