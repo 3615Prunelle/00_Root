@@ -1,5 +1,7 @@
 # include "philosophers.h"
 
+// TO DO - Check le flag de mort avant chaque action
+
 void	*itadakimasu(void *arg)
 {
 	struct one_bro	*this_yakuza = arg;
