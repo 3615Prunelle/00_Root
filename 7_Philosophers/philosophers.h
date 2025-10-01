@@ -61,6 +61,8 @@ typedef struct	time_related_data
 	unsigned long	time_to_die_in_ms;
 }				time_related_data;
 
+// typedef struct	one_bro;
+
 typedef struct	one_bro
 {
 	int					position;
@@ -68,6 +70,7 @@ typedef struct	one_bro
 	state				current_state;
 	mutex_t				*left_chopstick;
 	mutex_t				*right_chopstick;
+	mutex_t				*dead_flag;
 	int					total_yakuzas;
 	int					how_many_meals;					// Optional argument
 	time_related_data	TRD;
@@ -75,14 +78,15 @@ typedef struct	one_bro
 
 // ⚪ Functions signatures - Part 1
 void	*itadakimasu(void *arg);
-bool	check_if_alive_and_update_time_struct(one_bro *this_yakuza, bool is_eating);
+void	update_timestamp_last_meal(one_bro *this_yakuza);
 void	take_chopsticks_and_eat(one_bro *this_yakuza, mutex_t *first_chopstick_to_take, mutex_t *second_chopstick_to_take);
 void	sleep_till_think(one_bro *this_yakuza);
+void	dead_mutex(one_bro *this_yakuza, mutex_t *death_verif);
 
 // ⚪ Functions signatures - Part 2
 // ⚪ Clean up functions
 
 // ⚪ Test functions
-void	print_yakuzas_status(one_bro *this_yakuza);
+void	detach_all_threads(one_bro *this_yakuza);
 
 # endif
