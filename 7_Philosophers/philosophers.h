@@ -12,11 +12,6 @@
 # define GREEN "\e[1;32m"
 # define CYAN "\e[1;36m"
 
-# define LEFT 'l'
-# define RIGHT 'r'
-# define BOTH 'b'
-# define NONE '-'
-
 # define ERROR_MESSSAGE_01	"TBD\n"
 
 // ‼️ Si je mets des paths, mettre le chemin RELATIF depuis le dossier d'ou sera lancée la commande. Ce chemin est différent selon si je suis :
@@ -78,13 +73,11 @@ typedef struct	one_bro
 	time_related_data	TRD;
 }				one_bro;
 
-
-
 // ⚪ Functions signatures - Part 1
 void	*itadakimasu(void *arg);
-bool	check_if_alive_and_update_time_struct(one_bro *this_yakuza, bool update_meal_timestamp);	// V2
-void	take_chopsticks_till_sleep(one_bro *this_yakuza);						// V2
-void	sleep_till_think(one_bro *this_yakuza);									// V2
+bool	check_if_alive_and_update_time_struct(one_bro *this_yakuza, bool is_eating);
+void	take_chopsticks_and_eat(one_bro *this_yakuza, mutex_t *first_chopstick_to_take, mutex_t *second_chopstick_to_take);
+void	sleep_till_think(one_bro *this_yakuza);
 
 // ⚪ Functions signatures - Part 2
 // ⚪ Clean up functions
