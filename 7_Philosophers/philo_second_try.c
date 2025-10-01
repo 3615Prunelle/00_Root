@@ -8,11 +8,11 @@ void	*itadakimasu(void *arg)
 
 	check_if_alive_and_update_time_struct(this_yakuza, true);					// Had to add this line to update time diff between start & meal
 
-// Add priority for the cases there are lots of philosophers
+// Add priority for the cases there are lots of philosophers ?
 
 	while (this_yakuza->how_many_meals > 0)
 	{
-		if (this_yakuza->current_state == THINKING)			// Useless
+		if (this_yakuza->current_state == THINKING)			// Useless if kept that way
 		{
 			take_chopsticks_till_sleep(this_yakuza);
 			if(this_yakuza->current_state == SLEEPING)

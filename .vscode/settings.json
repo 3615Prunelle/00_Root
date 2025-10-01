@@ -17,7 +17,8 @@
 		"minitalk_client.h": "c",
 		"unistd.h": "c",
 		"string.h": "c",
-		"philosophers.h": "c"
+		"philosophers.h": "c",
+		"pthread.h": "c"
 	},
 		"files.exclude": {
 			"**/*.o": true	// Masquer tous les .o après chaque compilation

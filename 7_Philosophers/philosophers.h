@@ -17,13 +17,6 @@
 # define BOTH 'b'
 # define NONE '-'
 
-// Later : use ASCII Values otherwise Norminette gives a false positive :
-// "Preprocessor statement must only contain constant defines"
-# define EATING 'E'
-# define THINKING 'T'
-# define SLEEPING 'S'
-# define DEAD 'D'
-
 # define ERROR_MESSSAGE_01	"TBD\n"
 
 // ‼️ Si je mets des paths, mettre le chemin RELATIF depuis le dossier d'ou sera lancée la commande. Ce chemin est différent selon si je suis :
@@ -42,6 +35,17 @@
 # include <string.h>
 # include <pthread.h>
 #include <sys/time.h>								// For timeval struct
+
+// ⚪ Enums
+typedef enum e_states
+{
+	EATING,
+	THINKING,
+	SLEEPING,
+	DEAD
+}			state;
+
+typedef pthread_mutex_t mutex_t;
 
 // ⚪ Structs
 typedef struct	time_related_data
@@ -66,9 +70,9 @@ typedef struct	one_bro
 {
 	int					position;
 	pthread_t			thread_ID;
-	char				current_state;					// study enum instead of char - To Do 01/10
-	pthread_mutex_t		*left_chopstick;
-	pthread_mutex_t		*right_chopstick;
+	state				current_state;
+	mutex_t				*left_chopstick;
+	mutex_t				*right_chopstick;
 	int					total_yakuzas;
 	int					how_many_meals;					// Optional argument
 	time_related_data	TRD;

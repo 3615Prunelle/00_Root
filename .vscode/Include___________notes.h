@@ -28,6 +28,8 @@
 
 // NOTE : mettre les dossiers 99 + 98 au lieu de ca ^ car ce projet dépend des .h + .a mais pas besoin du reste
 
+// ⚪ Enums
+
 // ⚪ Structs
 
 // ⚪ Functions signatures - Part 1
