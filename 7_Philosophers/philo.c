@@ -10,9 +10,9 @@ void	*itadakimasu(void *arg)
 
 // Add priority for the cases there are lots of philosophers ?
 
-	while ((this_yakuza->how_many_meals > 0) && (this_yakuza->current_state != DEAD))
+	while (this_yakuza->current_state != DEAD)
 	{
-		if(this_yakuza->dead_flag == NULL)
+		if(!is_party_on(this_yakuza))
 			return(NULL);
 		if (this_yakuza->position % 2 == 0)										// Pairs prennent gauche en 1er
 		{
@@ -48,6 +48,8 @@ void	update_timestamp_last_meal(one_bro *this_yakuza)
 
 bool	is_yakuza_alive(one_bro *this_yakuza)
 {
+	if(!is_party_on(this_yakuza))
+		return(false);
 	struct timeval time_stamp;
 	gettimeofday(&time_stamp, NULL);
 	unsigned long	millisec_timestamp = (time_stamp.tv_sec * 1000) + (time_stamp.tv_usec / 1000);
@@ -70,19 +72,16 @@ bool	is_yakuza_alive(one_bro *this_yakuza)
 
 void	take_chopsticks_and_eat(one_bro *this_yakuza, mutex_t *first_chopstick_to_take, mutex_t *second_chopstick_to_take)
 {
-
 	pthread_mutex_lock(first_chopstick_to_take);
-
 	if (!is_yakuza_alive(this_yakuza))
 	{
-		pthread_mutex_unlock(first_chopstick_to_take);				// Check si possible de liberer plus haut 01/10
+		pthread_mutex_unlock(first_chopstick_to_take);					// Check si possible de liberer plus haut 01/10
 		return;
 	}
 	printf("Yakuza %d took first chopstick [%p] %lu milliseconds after her last meal\t\tCropped TS : %lu\n", this_yakuza->position, first_chopstick_to_take, this_yakuza->TRD.millisec_elapsed_since_last_meal, this_yakuza->TRD.millisec_cropped_now);
 	// printf("%lu %d is has taken a chopstick\n", this_yakuza->TRD.millisec_cropped_now, this_yakuza->position);
 
 	pthread_mutex_lock(second_chopstick_to_take);
-
 	if (!is_yakuza_alive(this_yakuza))		// Keep, as Yak sometimes waits before that chopstick is available
 	{
 		pthread_mutex_unlock(first_chopstick_to_take);					// Check si possible de liberer plus haut 01/10
@@ -95,13 +94,17 @@ void	take_chopsticks_and_eat(one_bro *this_yakuza, mutex_t *first_chopstick_to_t
 	this_yakuza->current_state = EATING;
 	printf("%sYakuza %d started eating %lu milliseconds after her last meal\t\t\t\tCropped TS : %lu\n%s", GREEN, this_yakuza->position, this_yakuza->TRD.millisec_elapsed_since_last_meal, this_yakuza->TRD.millisec_cropped_now, NC);
 	// printf("%lu %d is eating\n", this_yakuza->TRD.millisec_cropped_now, this_yakuza->position);
-
 	update_timestamp_last_meal(this_yakuza);
-
 	this_yakuza->how_many_meals--;
 	usleep(this_yakuza->TRD.time_to_eat_in_ms * 1000);
 
-	is_yakuza_alive(this_yakuza);			// Update TS only
+	if (!is_yakuza_alive(this_yakuza))									// Update TS + Check death flag. If death, release chopsticks
+	{
+		pthread_mutex_unlock(first_chopstick_to_take);					// Check si possible de liberer plus haut 01/10
+		pthread_mutex_unlock(second_chopstick_to_take);
+		return;
+	}
+
 	printf("%sYakuza %d is about to release chopsticks [%p] & [%p] - %d meals left\t\tCropped TS : %lu\n%s", YELLOW, this_yakuza->position, first_chopstick_to_take, second_chopstick_to_take, this_yakuza->how_many_meals, this_yakuza->TRD.millisec_cropped_now, NC);
 	pthread_mutex_unlock(first_chopstick_to_take);
 	pthread_mutex_unlock(second_chopstick_to_take);
@@ -110,7 +113,6 @@ void	take_chopsticks_and_eat(one_bro *this_yakuza, mutex_t *first_chopstick_to_t
 
 void	sleep_till_think(one_bro *this_yakuza)
 {
-
 	if (!is_yakuza_alive(this_yakuza))
 	{
 		return;
@@ -127,12 +129,16 @@ void	sleep_till_think(one_bro *this_yakuza)
 	this_yakuza->current_state = THINKING;
 	printf("%sYakuza %d started thinking %lu milliseconds after her last meal\t\t\t\tCropped TS : %lu\n%s", CYAN, this_yakuza->position, this_yakuza->TRD.millisec_elapsed_since_last_meal, this_yakuza->TRD.millisec_cropped_now, NC);
 	// printf("%lu %d is thinking\n", this_yakuza->TRD.millisec_cropped_now, this_yakuza->position);
-
 }
 
 bool	is_party_on(one_bro *this_yakuza)			// REALLY ? GO TO BED.
 {
-	if(this_yakuza->party_is_on)
+	bool	check;
+	pthread_mutex_lock(this_yakuza->dead_flag);
+	check = *this_yakuza->party_is_on;				// Saving value locally
+	pthread_mutex_unlock(this_yakuza->dead_flag);
+
+	if(check)
 		return (true);
 	return (false);
 }

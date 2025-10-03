@@ -83,6 +83,7 @@ void	update_timestamp_last_meal(one_bro *this_yakuza);
 void	take_chopsticks_and_eat(one_bro *this_yakuza, mutex_t *first_chopstick_to_take, mutex_t *second_chopstick_to_take);
 void	sleep_till_think(one_bro *this_yakuza);
 bool	dead_mutex(mutex_t *death_verif);
+bool	is_party_on(one_bro *this_yakuza);
 
 // ⚪ Functions signatures - Part 2
 // ⚪ Clean up functions
