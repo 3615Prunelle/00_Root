@@ -6,6 +6,7 @@
 // ⚪ #define
 # define NC "\e[0m"
 # define BLUE "\e[1;34m"
+# define S_BLUE "\e[34m"
 # define MAGENTA "\e[1;35m"
 # define YELLOW "\e[1;33m"
 # define RED "\e[1;31m"
@@ -40,6 +41,12 @@ typedef enum e_states
 	DEAD
 }			state;
 
+typedef enum e_prio
+{
+	HIGH,
+	LOW
+}			prio;
+
 typedef pthread_mutex_t mutex_t;
 
 // ⚪ Structs
@@ -68,6 +75,7 @@ typedef struct	one_bro
 	int					position;
 	pthread_t			thread_ID;
 	state				current_state;
+	prio				priority;
 	mutex_t				*left_chopstick;
 	mutex_t				*right_chopstick;
 	mutex_t				*dead_flag;
@@ -77,18 +85,18 @@ typedef struct	one_bro
 	time_related_data	TRD;
 }				one_bro;
 
-// ⚪ Functions signatures - Part 1
+// ⚪ Functions signatures - Actions
 void	*itadakimasu(void *arg);
-void	update_timestamp_last_meal(one_bro *this_yakuza);
 void	take_chopsticks_and_eat(one_bro *this_yakuza, mutex_t *first_chopstick_to_take, mutex_t *second_chopstick_to_take);
 void	sleep_till_think(one_bro *this_yakuza);
+
+// ⚪ Functions signatures - Helpers
+bool	is_yakuza_alive(one_bro *this_yakuza);
+prio	set_priority(one_bro *this_yakuza);
+void	update_timestamp_last_meal(one_bro *this_yakuza);
 bool	dead_mutex(mutex_t *death_verif);
 bool	is_party_on(one_bro *this_yakuza);
 
-// ⚪ Functions signatures - Part 2
 // ⚪ Clean up functions
-
-// ⚪ Test functions
-void	detach_all_threads(one_bro *this_yakuza);
 
 # endif
