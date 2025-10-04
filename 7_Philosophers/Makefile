@@ -35,13 +35,13 @@ NAME = philo
 
 CC = cc
 
-# Add -Wall -Wextra -Werror when done
-CFLAGS = -g -pthread
+CFLAGS = -g -pthread -Wall -Wextra -Werror
 
 # Flags de linking - No need here ?
 LFLAGS =
 
 SRCS =	philo_main.c \
+		philo_routines.c \
 		philo_helpers.c \
 		philo_actions.c
 

@@ -1,129 +1,93 @@
 # include "philosophers.h"
 
-// Quand je tiens un truc fonctionnel, faire les verif d'inputs
-// If no optional argument is provided (amount of meals), the simulation stops when a philosopher dies
-// ⁉️ Idea : use linked list (round) instead of arrays ?
 int		main(int argc, char **argv)
 {
 	int				amount_of_yakuzas = ft_atoi(argv[1]);
 	unsigned long	time_to_die_input = ft_atoi(argv[2]);
 	unsigned long	time_to_eat_input = ft_atoi(argv[3]);
 	unsigned long	time_to_sleep_input = ft_atoi(argv[4]);
-	int				number_of_times_each_philosopher_must_eat;		// Optional argument - Deal with both cases (provided or not)
-
+	int				number_of_times_each_philosopher_must_eat;
 	struct timeval now;
 	gettimeofday(&now, NULL);
 	unsigned long	now_in_millisec = (now.tv_sec * 1000) + (now.tv_usec / 1000);
-
 	if (amount_of_yakuzas == 1)
 	{
-		printf("%lu\t1 died\n", now_in_millisec);
+		printf("%s%lu\t1 died\n%s", S_RED, now_in_millisec, NC);
 		return(0);
 	}
-
 	if (argc == 6)
 		number_of_times_each_philosopher_must_eat = ft_atoi(argv[5]);
 	else
-		number_of_times_each_philosopher_must_eat = 200;			// Nope - Simulation should never stop if this arg is not provided
+		number_of_times_each_philosopher_must_eat = 200;
 
-	int 			i = 0;
-
-	one_bro		*this_yakuza;										// Array of profiles
-	this_yakuza = malloc(sizeof(one_bro) * amount_of_yakuzas);
-	one_bro		*backup_first_yakuza = this_yakuza;
-
-	mutex_t	*all_chopsticks;										// Array of mutex
+	int 		i = 0;
+	one_bro		*yakuza;
+	yakuza = malloc(sizeof(one_bro) * amount_of_yakuzas);
+	one_bro		*backup_first_yakuza = yakuza;
+	mutex_t	*all_chopsticks;
 	all_chopsticks = malloc(sizeof(mutex_t) * amount_of_yakuzas);
 	while (i < amount_of_yakuzas)
 	{
 		pthread_mutex_init(&all_chopsticks[i], NULL);
-		// printf("%sMutex %d has address %p\n%s", GREEN, i + 1, &all_chopsticks[i], NC);
 		i++;
 	}
 	i = 0;
-
 	mutex_t flag;
 	pthread_mutex_init(&flag, NULL);
 	bool	party_on = true;
-
 	while (i < amount_of_yakuzas)
 	{
-		this_yakuza->position = i + 1;
-		// this_yakuza->thread_ID = ;		// Will be done below, I need to create the rest first, otherwise fail
-		this_yakuza->current_state = THINKING;
-		this_yakuza->priority = HIGH;
-		if(this_yakuza->position == amount_of_yakuzas)
+		yakuza->position = i + 1;
+		yakuza->current_state = THINKING;
+		yakuza->priority = HIGH;
+		if(yakuza->position == amount_of_yakuzas)
 		{
-			this_yakuza->left_chopstick = &all_chopsticks[i];
-			this_yakuza->right_chopstick = backup_first_yakuza->left_chopstick;
+			yakuza->left_chpstk = &all_chopsticks[i];
+			yakuza->right_chpstk = backup_first_yakuza->left_chpstk;
 		}
 		else
 		{
-			this_yakuza->left_chopstick = &all_chopsticks[i];
-			this_yakuza->right_chopstick = &all_chopsticks[i + 1];
+			yakuza->left_chpstk = &all_chopsticks[i];
+			yakuza->right_chpstk = &all_chopsticks[i + 1];
 		}
-		this_yakuza->dead_flag = &flag;
-		this_yakuza->party_is_on = &party_on;
-		this_yakuza->total_yakuzas = amount_of_yakuzas;
-		this_yakuza->how_many_meals = number_of_times_each_philosopher_must_eat;
-
-		this_yakuza->TRD.millisec_timestamp_start_dinner = now_in_millisec;
-		this_yakuza->TRD.millisec_cropped_start_dinner = now_in_millisec % 10000;		// Variable a supp quand je tiens un truc fonctionnel
-
-		this_yakuza->TRD.millisec_timestamp_now = now_in_millisec;
-		this_yakuza->TRD.millisec_cropped_now = now_in_millisec % 10000;				// Variable a supp quand je tiens un truc fonctionnel
-
-		this_yakuza->TRD.millisec_timestamp_last_meal = now_in_millisec;
-		this_yakuza->TRD.millisec_cropped_last_meal = now_in_millisec % 10000;			// Variable a supp quand je tiens un truc fonctionnel
-
-		this_yakuza->TRD.millisec_elapsed_since_last_meal = 0;
-
-		this_yakuza->TRD.time_to_eat_in_ms = time_to_eat_input;
-		this_yakuza->TRD.time_to_sleep_in_ms = time_to_sleep_input;
-		this_yakuza->TRD.time_to_die_in_ms = time_to_die_input;
-		this_yakuza->TRD.eat_plus_sleep_in_ms = time_to_eat_input + time_to_sleep_input;
-		this_yakuza->TRD.max_thinking_time_in_ms = time_to_die_input - (time_to_eat_input + time_to_sleep_input);
-		this_yakuza->TRD.half_max_thinking_time_in_ms = (time_to_die_input - (time_to_eat_input + time_to_sleep_input)) / 2;
-		this_yakuza++;
+		yakuza->dead_flag = &flag;
+		yakuza->party_is_on = &party_on;
+		yakuza->total_yakuzas = amount_of_yakuzas;
+		yakuza->meals_count = number_of_times_each_philosopher_must_eat;
+		yakuza->TRD.last_meal = now_in_millisec;
+		yakuza->TRD.elapsed_since_last_meal = 0;
+		yakuza->TRD.time_to_eat = time_to_eat_input;
+		yakuza->TRD.time_to_sleep = time_to_sleep_input;
+		yakuza->TRD.time_to_die = time_to_die_input;
+		yakuza->TRD.eat_plus_sleep = time_to_eat_input + time_to_sleep_input;
+		yakuza->TRD.mid_thinking_time = (time_to_die_input - (time_to_eat_input + time_to_sleep_input)) / 2; // too long, put in variable
+		yakuza++;
 		i++;
 	}
 	i = 0;
-	this_yakuza = backup_first_yakuza;
-
-	pthread_t		*all_threads;		// Array of threads
+	yakuza = backup_first_yakuza;
 	while (i < amount_of_yakuzas)
 	{
-		pthread_create(&this_yakuza->thread_ID, NULL, itadakimasu, (void *) this_yakuza);
-		// printf("%sYakuza %d has ID [%lu]\n%s", BLUE, i + 1, this_yakuza->thread_ID, NC);
-		this_yakuza++;
+		pthread_create(&yakuza->thread_ID, NULL, itadakimasu, (void *) yakuza);
+		yakuza++;
 		i++;
 	}
 	i = 0;
-	this_yakuza = backup_first_yakuza;
+	yakuza = backup_first_yakuza;
 
-	pthread_t		monitor_san;			// Pas sure que ca aille ici - Le mettre dans le tableau de threads instead ?
-	pthread_create(&monitor_san, NULL, monitor, (void *) this_yakuza);
+	pthread_t		monitor_san;
+	pthread_create(&monitor_san, NULL, monitor, (void *) yakuza);
 
-	// garder a la fin ?
 	while (i < amount_of_yakuzas)
 	{
-		pthread_join(this_yakuza->thread_ID, NULL);
-		this_yakuza++;
-		i++;
-	}
-	i = 0;
-	this_yakuza = backup_first_yakuza;
-	pthread_join(monitor_san, NULL);
-
-	while (i < amount_of_yakuzas)					// Should I move each mutex_destroy to somewhere else ?
-	{
+		pthread_join(yakuza->thread_ID, NULL);
 		pthread_mutex_destroy(&all_chopsticks[i]);
+		yakuza++;
 		i++;
 	}
+	pthread_join(monitor_san, NULL);
 	pthread_mutex_destroy(&flag);
-
-	free(this_yakuza);			// Free arrays
+	free(backup_first_yakuza);			// Free arrays
 	free(all_chopsticks);
-
 	return(0);
 }

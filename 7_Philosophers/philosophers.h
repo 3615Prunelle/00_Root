@@ -20,22 +20,23 @@
 
 # define ERROR_MESSSAGE_01	"TBD\n"
 
-// ‼️ Si je mets des paths, mettre le chemin RELATIF depuis le dossier d'ou sera lancée la commande. Ce chemin est différent selon si je suis :
-// - Sur mon PC perso
-// - Sur l'ordi du campus
-// ET selon si je :
-// - Fais 'make' depuis le dossier du projet (path from projet folder)
-// - Compile via VSCode (path from workspaceFolder)
+/*
+‼️ Si je mets des paths, mettre le chemin RELATIF depuis le dossier d'ou sera
+lancée la commande. Ce chemin est différent selon si je suis :
+- Sur mon PC perso
+- Sur l'ordi du campus
+ET selon si je :
+- Fais 'make' depuis le dossier du projet (path from projet folder)
+- Compile via VSCode (path from workspaceFolder)
+*/
 
 // ⚪ #include
 # include <stdlib.h>
 # include <unistd.h>
 # include <stdio.h>
 # include <stdbool.h>
-# include <limits.h>
-# include <string.h>
 # include <pthread.h>
-#include <sys/time.h>								// For struct timeval struct
+#include <sys/time.h>
 
 // ⚪ Enums
 typedef enum e_states
@@ -57,24 +58,17 @@ typedef pthread_mutex_t mutex_t;
 // ⚪ Structs
 typedef struct	time_related_data
 {
-	unsigned long	millisec_timestamp_start_dinner;
-	unsigned long	millisec_cropped_start_dinner;
-
-	unsigned long	millisec_timestamp_now;
-	unsigned long	millisec_cropped_now;
-
-	unsigned long	millisec_timestamp_last_meal;
-	unsigned long	millisec_cropped_last_meal;
-
-	unsigned long	millisec_elapsed_since_last_meal;
-
-	unsigned long	time_to_eat_in_ms;
-	unsigned long	time_to_sleep_in_ms;
-	unsigned long	time_to_die_in_ms;
-	unsigned long	eat_plus_sleep_in_ms;
-	unsigned long	max_thinking_time_in_ms;
-	unsigned long	half_max_thinking_time_in_ms;
+	unsigned long	now;
+	unsigned long	last_meal;
+	unsigned long	elapsed_since_last_meal;
+	unsigned long	time_to_eat;
+	unsigned long	time_to_sleep;
+	unsigned long	time_to_die;
+	unsigned long	eat_plus_sleep;
+	unsigned long	mid_thinking_time;
 }				time_related_data;
+
+
 
 // typedef struct	one_bro;
 
@@ -84,29 +78,28 @@ typedef struct	one_bro
 	pthread_t			thread_ID;
 	state				current_state;
 	prio				priority;
-	mutex_t				*left_chopstick;
-	mutex_t				*right_chopstick;
+	mutex_t				*left_chpstk;
+	mutex_t				*right_chpstk;
 	mutex_t				*dead_flag;
 	bool				*party_is_on;
 	int					total_yakuzas;
-	int					how_many_meals;					// Optional argument
+	int					meals_count;					// Optional argument
 	time_related_data	TRD;
 }				one_bro;
 
 // ⚪ Functions signatures - Actions
 void	*itadakimasu(void *arg);
-void	take_chopsticks_and_eat(one_bro *this_yakuza, mutex_t *first_chopstick_to_take, mutex_t *second_chopstick_to_take);
-void	sleep_till_think(one_bro *this_yakuza);
+void	take_chopsticks_and_eat(one_bro *yakuza, mutex_t *chopstick_1, mutex_t *chopstick_2);
+void	sleep_till_think(one_bro *yakuza);
 
 // ⚪ Functions signatures - Helpers
 void	*monitor(void *arg);
-bool	is_yakuza_alive(one_bro *this_yakuza);
-prio	set_priority(one_bro *this_yakuza);
-void	update_timestamp_last_meal(one_bro *this_yakuza);
+bool	is_yakuza_alive(one_bro *yakuza);
+prio	set_priority(one_bro *yakuza);
+void	update_timestamp_last_meal(one_bro *yakuza);
 bool	dead_mutex(mutex_t *death_verif);
-bool	is_party_on(one_bro *this_yakuza);
+bool	is_party_on(one_bro *yakuza);
+void	free_both_chopsticks(mutex_t *chopstick_1, mutex_t *chopstick_2);
 int		ft_atoi(const char *nptr);
-
-// ⚪ Clean up functions
 
 # endif

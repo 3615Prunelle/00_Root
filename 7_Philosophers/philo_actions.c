@@ -1,99 +1,45 @@
 # include "philosophers.h"
 
-// TO DO - Bool local a updater avec le bool dans struct (check last convo Claude)
-// Utiliser le mutex avant de lire le bool, et le bloquer direct apres
-
-void	*itadakimasu(void *arg)
+void	take_chopsticks_and_eat(one_bro *yakuza, mutex_t *chopstick_1, mutex_t *chopstick_2)
 {
-	one_bro	*this_yakuza = arg;
-
-	while ((this_yakuza->current_state != DEAD) && (this_yakuza->how_many_meals > 0))
+	while (yakuza->priority == LOW)
 	{
-		if(!is_yakuza_alive(this_yakuza))
-			return(NULL);
-		if (this_yakuza->position % 2 == 0)										// Pairs prennent gauche en 1er
-		{
-			take_chopsticks_and_eat(this_yakuza, this_yakuza->left_chopstick, this_yakuza->right_chopstick);
-			if(this_yakuza->current_state == EATING)							// Deadlock check
-			{
-				sleep_till_think(this_yakuza);
-			}
-		}
-		else
-		{
-			take_chopsticks_and_eat(this_yakuza, this_yakuza->right_chopstick, this_yakuza->left_chopstick);
-			if(this_yakuza->current_state == EATING)							// Deadlock check
-			{
-				sleep_till_think(this_yakuza);
-			}
-		}
-	}
-	return(NULL);				// Change arg in calling function if a return value ptr is needed
-}
-// FYI - Max useconds is 999 999 (so almost 1 sec)
-// Cropped = ne garder que les 5 derniers chiffres des millisecondes sinon relou pour debug
-void	take_chopsticks_and_eat(one_bro *this_yakuza, mutex_t *first_chopstick_to_take, mutex_t *second_chopstick_to_take)
-{
-	while (this_yakuza->priority == LOW)
-	{
-		set_priority(this_yakuza);
+		set_priority(yakuza);
 		usleep(10);
 	}
-	pthread_mutex_lock(first_chopstick_to_take);
-	if (!is_yakuza_alive(this_yakuza))
+	pthread_mutex_lock(chopstick_1);
+	if (!is_yakuza_alive(yakuza))
 	{
-		pthread_mutex_unlock(first_chopstick_to_take);
+		pthread_mutex_unlock(chopstick_1);
 		return;
 	}
-	printf("Yakuza %d took first chopstick [%p] %lu milliseconds after his last meal\t\tCropped TS : %lu\n", this_yakuza->position, first_chopstick_to_take, this_yakuza->TRD.millisec_elapsed_since_last_meal, this_yakuza->TRD.millisec_cropped_now);
-	// printf("%lu %d is has taken a chopstick\n", this_yakuza->TRD.millisec_cropped_now, this_yakuza->position);
-
-	pthread_mutex_lock(second_chopstick_to_take);
-	if (!is_yakuza_alive(this_yakuza))									// Keep, as Yak sometimes waits before that chopstick is available
+	printf("%lu %d is has taken a chopstick\n", yakuza->TRD.now, yakuza->position);
+	pthread_mutex_lock(chopstick_2);
+	if (!is_yakuza_alive(yakuza))
 	{
-		pthread_mutex_unlock(first_chopstick_to_take);
-		pthread_mutex_unlock(second_chopstick_to_take);
+		free_both_chopsticks(chopstick_1, chopstick_2);
 		return;
 	}
-	printf("Yakuza %d took second chopstick [%p] %lu milliseconds after his last meal\t\tCropped TS : %lu\n", this_yakuza->position, second_chopstick_to_take, this_yakuza->TRD.millisec_elapsed_since_last_meal, this_yakuza->TRD.millisec_cropped_now);
-	// printf("%lu %d is has taken a chopstick\n", this_yakuza->TRD.millisec_cropped_now, this_yakuza->position);
-
-	this_yakuza->current_state = EATING;
-	printf("%sYakuza %d started eating %lu milliseconds after his last meal\t\t\t\tCropped TS : %lu\n%s", GREEN, this_yakuza->position, this_yakuza->TRD.millisec_elapsed_since_last_meal, this_yakuza->TRD.millisec_cropped_now, NC);
-	// printf("%lu %d is eating\n", this_yakuza->TRD.millisec_cropped_now, this_yakuza->position);
-	update_timestamp_last_meal(this_yakuza);
-	this_yakuza->how_many_meals--;
-	usleep(this_yakuza->TRD.time_to_eat_in_ms * 1000);
-
-	if (!is_yakuza_alive(this_yakuza))									// Update TS + Check death flag. If death, release chopsticks
-	{
-		pthread_mutex_unlock(first_chopstick_to_take);					// Check si possible de liberer plus haut 01/10
-		pthread_mutex_unlock(second_chopstick_to_take);
-		return;
-	}
-
-	printf("%sYakuza %d is about to release chopsticks [%p] & [%p] - %d meal(s) left\tCropped TS : %lu\n%s", YELLOW, this_yakuza->position, first_chopstick_to_take, second_chopstick_to_take, this_yakuza->how_many_meals, this_yakuza->TRD.millisec_cropped_now, NC);
-	pthread_mutex_unlock(first_chopstick_to_take);
-	pthread_mutex_unlock(second_chopstick_to_take);
+	printf("%lu %d is has taken a chopstick\n", yakuza->TRD.now, yakuza->position);
+	yakuza->current_state = EATING;
+	printf("%s%lu %d is eating\n%s", S_GREEN, yakuza->TRD.now, yakuza->position, NC);
+	update_timestamp_last_meal(yakuza);
+	yakuza->meals_count--;
+	usleep(yakuza->TRD.time_to_eat * 1000);
+	free_both_chopsticks(chopstick_1, chopstick_2);
 }
 
-void	sleep_till_think(one_bro *this_yakuza)
+void	sleep_till_think(one_bro *yakuza)
 {
-	if (!is_yakuza_alive(this_yakuza))
-	{
+	if (!is_yakuza_alive(yakuza))
 		return;
-	}
-	this_yakuza->current_state = SLEEPING;
-	printf("%sYakuza %d started sleeping %lu milliseconds after his last meal\t\t\t\tCropped TS : %lu\n%s", BLUE, this_yakuza->position, this_yakuza->TRD.millisec_elapsed_since_last_meal, this_yakuza->TRD.millisec_cropped_now, NC);
-	// printf("%lu %d is sleeping\n", this_yakuza->TRD.millisec_cropped_now, this_yakuza->position);
-	usleep(this_yakuza->TRD.time_to_sleep_in_ms * 1000);
+	yakuza->current_state = SLEEPING;
+	printf("%lu %d is sleeping\n", yakuza->TRD.now, yakuza->position);
+	usleep(yakuza->TRD.time_to_sleep * 1000);
 
-	if (!is_yakuza_alive(this_yakuza))
-	{
+	if (!is_yakuza_alive(yakuza))
 		return;
-	}
-	this_yakuza->current_state = THINKING;
-	printf("%sYakuza %d started thinking %lu milliseconds after his last meal\t\t\t\tCropped TS : %lu\n%s", CYAN, this_yakuza->position, this_yakuza->TRD.millisec_elapsed_since_last_meal, this_yakuza->TRD.millisec_cropped_now, NC);
-	// printf("%lu %d is thinking\n", this_yakuza->TRD.millisec_cropped_now, this_yakuza->position);
-	this_yakuza->priority = LOW;
+	yakuza->current_state = THINKING;
+	printf("%lu %d is thinking\n", yakuza->TRD.now, yakuza->position);
+	yakuza->priority = LOW;
 }
