@@ -49,7 +49,7 @@ bool	is_yakuza_alive(one_bro *this_yakuza)
 
 	this_yakuza->TRD.millisec_cropped_now = millisec_timestamp % 10000;
 	this_yakuza->TRD.millisec_elapsed_since_last_meal = millisec_timestamp - (this_yakuza->TRD.millisec_timestamp_last_meal);
-	printf("%sTime Elap Watch : Yak %d - %lu\t\t\t\t\t\t\t\tCropped TS : %lu\n%s", S_MAGENTA, this_yakuza->position, this_yakuza->TRD.millisec_elapsed_since_last_meal, this_yakuza->TRD.millisec_cropped_now, NC);
+	// printf("%sTime Elap Watch : Yak %d - %lu\t\t\t\t\t\t\t\tCropped TS : %lu\n%s", S_MAGENTA, this_yakuza->position, this_yakuza->TRD.millisec_elapsed_since_last_meal, this_yakuza->TRD.millisec_cropped_now, NC);
 
 	if(millisec_timestamp >= (this_yakuza->TRD.millisec_timestamp_last_meal + this_yakuza->TRD.time_to_die_in_ms))
 	{
@@ -74,6 +74,26 @@ bool	is_party_on(one_bro *this_yakuza)
 	if(check)
 		return (true);
 	return (false);
+}
+
+void	*monitor(void *arg)
+{
+	one_bro	*yakuzas = (one_bro*)arg;
+	int		i = 0;
+
+	while (true)
+	{
+		i = 0;
+		while (i < yakuzas->total_yakuzas)
+		{
+			if (!is_yakuza_alive(&yakuzas[i]))
+			{
+				return(NULL);
+			}
+			i++;
+		}
+	}
+	return(NULL);
 }
 
 /* // Bad idea - Function to delete at some point if no use is found

@@ -5,7 +5,7 @@
 
 void	*itadakimasu(void *arg)
 {
-	struct one_bro	*this_yakuza = arg;
+	one_bro	*this_yakuza = arg;
 
 	while ((this_yakuza->current_state != DEAD) && (this_yakuza->how_many_meals > 0))
 	{
@@ -47,10 +47,13 @@ void	take_chopsticks_and_eat(one_bro *this_yakuza, mutex_t *first_chopstick_to_t
 		usleep(10);
 	}
 	printf("Prio for Yakuza %d is HIGH - Waiting for the first chopstick %p\t\t\tCropped TS : %lu\n", this_yakuza->position, first_chopstick_to_take, this_yakuza->TRD.millisec_cropped_now);
-	if(!is_yakuza_alive(this_yakuza))
+	if(!is_yakuza_alive(this_yakuza)) /* && autre condition ? */
 	{
 		return;
 	}
+
+	// ‼️ Le problème est ici : si un yakuza meurt après le check et pendant l'attente, ca n'est pas détecté
+
 	pthread_mutex_lock(first_chopstick_to_take);
 	if (!is_yakuza_alive(this_yakuza))
 	{

@@ -99,6 +99,7 @@ void	take_chopsticks_and_eat(one_bro *this_yakuza, mutex_t *first_chopstick_to_t
 void	sleep_till_think(one_bro *this_yakuza);
 
 // ⚪ Functions signatures - Helpers
+void	*monitor(void *arg);
 bool	is_yakuza_alive(one_bro *this_yakuza);
 prio	set_priority(one_bro *this_yakuza);
 void	update_timestamp_last_meal(one_bro *this_yakuza);

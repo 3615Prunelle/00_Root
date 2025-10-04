@@ -102,6 +102,9 @@ int		main(int argc, char **argv)
 	i = 0;
 	this_yakuza = backup_first_yakuza;
 
+	pthread_t		monitor_san;			// Pas sure que ca aille ici - Le mettre dans le tableau de threads instead ?
+	pthread_create(&monitor_san, NULL, monitor, (void *) this_yakuza);
+
 	// garder a la fin ?
 	while (i < amount_of_yakuzas)
 	{
