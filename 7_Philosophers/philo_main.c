@@ -82,6 +82,9 @@ int		main(int argc, char **argv)
 		this_yakuza->TRD.time_to_eat_in_ms = time_to_eat_input;
 		this_yakuza->TRD.time_to_sleep_in_ms = time_to_sleep_input;
 		this_yakuza->TRD.time_to_die_in_ms = time_to_die_input;
+		this_yakuza->TRD.eat_plus_sleep_in_ms = time_to_eat_input + time_to_sleep_input;
+		this_yakuza->TRD.max_thinking_time_in_ms = time_to_die_input - (time_to_eat_input + time_to_sleep_input);
+		this_yakuza->TRD.half_max_thinking_time_in_ms = (time_to_die_input - (time_to_eat_input + time_to_sleep_input)) / 2;
 		this_yakuza++;
 		i++;
 	}

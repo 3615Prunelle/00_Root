@@ -8,10 +8,15 @@
 # define BLUE "\e[1;34m"
 # define S_BLUE "\e[34m"
 # define MAGENTA "\e[1;35m"
+# define S_MAGENTA "\e[35m"
 # define YELLOW "\e[1;33m"
+# define S_YELLOW "\e[33m"
 # define RED "\e[1;31m"
+# define S_RED "\e[31m"
 # define GREEN "\e[1;32m"
+# define S_GREEN "\e[32m"
 # define CYAN "\e[1;36m"
+# define S_CYAN "\e[36m"
 
 # define ERROR_MESSSAGE_01	"TBD\n"
 
@@ -66,6 +71,9 @@ typedef struct	time_related_data
 	unsigned long	time_to_eat_in_ms;
 	unsigned long	time_to_sleep_in_ms;
 	unsigned long	time_to_die_in_ms;
+	unsigned long	eat_plus_sleep_in_ms;
+	unsigned long	max_thinking_time_in_ms;
+	unsigned long	half_max_thinking_time_in_ms;
 }				time_related_data;
 
 // typedef struct	one_bro;

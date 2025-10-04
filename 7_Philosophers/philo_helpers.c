@@ -1,5 +1,13 @@
 # include "philosophers.h"
 
+// timeval structs dans struct one_bro plutot que TDR & calculs ?
+// faire autant de prios que de yaks / 2
+// si 2 yaks, prio 1 seulement
+// si 3 yaks, nope car tronqué sur 1 si 3 divisé par 2
+// Poubelle - Next idea :
+// faire des groupes de prio par temps restant
+// prio low est entre time2die - (time2eat + time2sleep) soit 10ms et 10/2
+// prio high est entre 10/2 et time2die
 prio	set_priority(one_bro *this_yakuza)
 {
 	struct timeval time_stamp;
@@ -9,12 +17,11 @@ prio	set_priority(one_bro *this_yakuza)
 	this_yakuza->TRD.millisec_cropped_now = millisec_timestamp % 10000;
 	this_yakuza->TRD.millisec_elapsed_since_last_meal = millisec_timestamp - (this_yakuza->TRD.millisec_timestamp_last_meal);
 
-	if (this_yakuza->TRD.millisec_elapsed_since_last_meal > this_yakuza->TRD.time_to_eat_in_ms)
+	if ((this_yakuza->TRD.millisec_elapsed_since_last_meal - this_yakuza->TRD.eat_plus_sleep_in_ms) > this_yakuza->TRD.half_max_thinking_time_in_ms)
 	{
 		this_yakuza->priority = HIGH;
 		return(HIGH);
 	}
-	this_yakuza->priority = LOW;
 	return(LOW);
 }
 
@@ -39,30 +46,21 @@ bool	is_yakuza_alive(one_bro *this_yakuza)
 	gettimeofday(&time_stamp, NULL);
 	unsigned long	millisec_timestamp = (time_stamp.tv_sec * 1000) + (time_stamp.tv_usec / 1000);
 
+
 	this_yakuza->TRD.millisec_cropped_now = millisec_timestamp % 10000;
 	this_yakuza->TRD.millisec_elapsed_since_last_meal = millisec_timestamp - (this_yakuza->TRD.millisec_timestamp_last_meal);
-	printf("%sTime Stamp Test : Yak %d - %lu\n%s", RED, this_yakuza->position, this_yakuza->TRD.millisec_elapsed_since_last_meal, NC);
+	printf("%sTime Elap Watch : Yak %d - %lu\t\t\t\t\t\t\t\tCropped TS : %lu\n%s", S_MAGENTA, this_yakuza->position, this_yakuza->TRD.millisec_elapsed_since_last_meal, this_yakuza->TRD.millisec_cropped_now, NC);
 
 	if(millisec_timestamp >= (this_yakuza->TRD.millisec_timestamp_last_meal + this_yakuza->TRD.time_to_die_in_ms))
 	{
 		pthread_mutex_lock(this_yakuza->dead_flag);
-		// printf("%sYakuza %d died because she hasn't eaten since %lu milliseconds\t\t\t\tCropped TS : %lu\n%s", RED, this_yakuza->position, this_yakuza->TRD.millisec_elapsed_since_last_meal, this_yakuza->TRD.millisec_cropped_now, NC);
 		*this_yakuza->party_is_on = false;
-		printf("%lu %d died\n", this_yakuza->TRD.millisec_cropped_now, this_yakuza->position);
+		printf("%sYakuza %d died because he hasn't eaten since %lu milliseconds\t\t\t\tCropped TS : %lu\n%s", RED, this_yakuza->position, this_yakuza->TRD.millisec_elapsed_since_last_meal, this_yakuza->TRD.millisec_cropped_now, NC);
+		// printf("%lu %d died\n", this_yakuza->TRD.millisec_cropped_now, this_yakuza->position);
 		this_yakuza->current_state = DEAD;
 		pthread_mutex_unlock(this_yakuza->dead_flag);
 		return(false);
 	}
-	// if ((this_yakuza->current_state != DEAD) && ((this_yakuza->TRD.millisec_elapsed_since_last_meal) >= this_yakuza->TRD.time_to_die_in_ms))
-	// {
-	// 	pthread_mutex_lock(this_yakuza->dead_flag);
-	// 	// printf("%sYakuza %d died because she hasn't eaten since %lu milliseconds\t\t\t\tCropped TS : %lu\n%s", RED, this_yakuza->position, this_yakuza->TRD.millisec_elapsed_since_last_meal, this_yakuza->TRD.millisec_cropped_now, NC);
-	// 	*this_yakuza->party_is_on = false;
-	// 	printf("%lu %d died\n", this_yakuza->TRD.millisec_cropped_now, this_yakuza->position);
-	// 	this_yakuza->current_state = DEAD;
-	// 	pthread_mutex_unlock(this_yakuza->dead_flag);
-	// 	return(false);
-	// }
 	return(true);
 }
 // Or monitor =  extra thread that checks if a yakuza is dead
