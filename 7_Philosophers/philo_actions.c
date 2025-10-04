@@ -32,41 +32,26 @@ void	*itadakimasu(void *arg)
 }
 // FYI - Max useconds is 999 999 (so almost 1 sec)
 // Cropped = ne garder que les 5 derniers chiffres des millisecondes sinon relou pour debug
-
-// 3411 2 done eating (3211 + 200)
-// 3321 1 dies (3011 + 310)
-// 1 dies while 2 is eating
-// time stamp of 1 dying is way after its actual death
-
 void	take_chopsticks_and_eat(one_bro *this_yakuza, mutex_t *first_chopstick_to_take, mutex_t *second_chopstick_to_take)
 {
 	while (this_yakuza->priority == LOW)
 	{
 		set_priority(this_yakuza);
-		// printf("%s%d was/is low prio\n%s", S_BLUE, this_yakuza->position, NC);
 		usleep(10);
 	}
-	printf("Prio for Yakuza %d is HIGH - Waiting for the first chopstick %p\t\t\tCropped TS : %lu\n", this_yakuza->position, first_chopstick_to_take, this_yakuza->TRD.millisec_cropped_now);
-	if(!is_yakuza_alive(this_yakuza)) /* && autre condition ? */
-	{
-		return;
-	}
-
-	// ‼️ Le problème est ici : si un yakuza meurt après le check et pendant l'attente, ca n'est pas détecté
-
 	pthread_mutex_lock(first_chopstick_to_take);
 	if (!is_yakuza_alive(this_yakuza))
 	{
-		pthread_mutex_unlock(first_chopstick_to_take);					// Check si possible de liberer plus haut 01/10
+		pthread_mutex_unlock(first_chopstick_to_take);
 		return;
 	}
 	printf("Yakuza %d took first chopstick [%p] %lu milliseconds after his last meal\t\tCropped TS : %lu\n", this_yakuza->position, first_chopstick_to_take, this_yakuza->TRD.millisec_elapsed_since_last_meal, this_yakuza->TRD.millisec_cropped_now);
 	// printf("%lu %d is has taken a chopstick\n", this_yakuza->TRD.millisec_cropped_now, this_yakuza->position);
 
 	pthread_mutex_lock(second_chopstick_to_take);
-	if (!is_yakuza_alive(this_yakuza))		// Keep, as Yak sometimes waits before that chopstick is available
+	if (!is_yakuza_alive(this_yakuza))									// Keep, as Yak sometimes waits before that chopstick is available
 	{
-		pthread_mutex_unlock(first_chopstick_to_take);					// Check si possible de liberer plus haut 01/10
+		pthread_mutex_unlock(first_chopstick_to_take);
 		pthread_mutex_unlock(second_chopstick_to_take);
 		return;
 	}

@@ -105,6 +105,7 @@ prio	set_priority(one_bro *this_yakuza);
 void	update_timestamp_last_meal(one_bro *this_yakuza);
 bool	dead_mutex(mutex_t *death_verif);
 bool	is_party_on(one_bro *this_yakuza);
+int		ft_atoi(const char *nptr);
 
 // ⚪ Clean up functions
 

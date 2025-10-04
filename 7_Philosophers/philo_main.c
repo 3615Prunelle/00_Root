@@ -5,10 +5,10 @@
 // ⁉️ Idea : use linked list (round) instead of arrays ?
 int		main(int argc, char **argv)
 {
-	int				amount_of_yakuzas = atoi(argv[1]);				// Fonction pas autorisee, c/c celle de ma libft later
-	unsigned long	time_to_die_input = atoi(argv[2]);
-	unsigned long	time_to_eat_input = atoi(argv[3]);
-	unsigned long	time_to_sleep_input = atoi(argv[4]);
+	int				amount_of_yakuzas = ft_atoi(argv[1]);
+	unsigned long	time_to_die_input = ft_atoi(argv[2]);
+	unsigned long	time_to_eat_input = ft_atoi(argv[3]);
+	unsigned long	time_to_sleep_input = ft_atoi(argv[4]);
 	int				number_of_times_each_philosopher_must_eat;		// Optional argument - Deal with both cases (provided or not)
 
 	struct timeval now;
@@ -18,14 +18,13 @@ int		main(int argc, char **argv)
 	if (amount_of_yakuzas == 1)
 	{
 		printf("%lu\t1 died\n", now_in_millisec);
-		// Anything to free ?
 		return(0);
 	}
 
 	if (argc == 6)
-		number_of_times_each_philosopher_must_eat= atoi(argv[5]);
+		number_of_times_each_philosopher_must_eat = ft_atoi(argv[5]);
 	else
-		number_of_times_each_philosopher_must_eat = 100;				// Nope - Simulation should never stop if this arg is not provided
+		number_of_times_each_philosopher_must_eat = 200;			// Nope - Simulation should never stop if this arg is not provided
 
 	int 			i = 0;
 
@@ -114,12 +113,17 @@ int		main(int argc, char **argv)
 	}
 	i = 0;
 	this_yakuza = backup_first_yakuza;
+	pthread_join(monitor_san, NULL);
 
-	while (i < amount_of_yakuzas)					// For testing only
+	while (i < amount_of_yakuzas)					// Should I move each mutex_destroy to somewhere else ?
 	{
-		pthread_mutex_destroy(&all_chopsticks[i]);	// move this line to the place/fonction I'll use each mutex
+		pthread_mutex_destroy(&all_chopsticks[i]);
 		i++;
 	}
 	pthread_mutex_destroy(&flag);
+
+	free(this_yakuza);			// Free arrays
+	free(all_chopsticks);
+
 	return(0);
 }
