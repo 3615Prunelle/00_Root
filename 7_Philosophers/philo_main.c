@@ -1,5 +1,8 @@
 #include "philosophers.h"
 
+// TO DO : see last convo w/ Claude
+// remove backups 1st ptr yakuzas et work with index instead
+
 int	main(int argc, char **argv)
 {
 	(void)argc;		// tester void instead of int dans args input main
