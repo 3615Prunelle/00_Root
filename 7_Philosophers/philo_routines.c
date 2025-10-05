@@ -2,7 +2,7 @@
 
 void	*itadakimasu(void *arg)
 {
-	one_bro	*yakuza = arg;
+	t_yaks	*yakuza = arg;
 
 	while ((yakuza->current_state != DEAD) && (yakuza->meals_count > 0))
 	{
@@ -30,7 +30,7 @@ void	*itadakimasu(void *arg)
 
 void	*monitor(void *arg)
 {
-	one_bro	*yakuzas = (one_bro*)arg;
+	t_yaks	*yakuzas = (t_yaks*)arg;
 	int		i = 0;
 
 	while (is_party_on(yakuzas) && (yakuzas->meals_count > 0))

@@ -1,15 +1,15 @@
 # include "philosophers.h"
 
-// timeval structs dans struct one_bro plutot que TDR & calculs ?
-prio	set_priority(one_bro *yakuza)
+// timeval structs dans struct yaks plutot que TDR & calculs ?
+t_prio	set_priority(t_yaks *yakuza)
 {
 	struct timeval time_stamp;
 	gettimeofday(&time_stamp, NULL);
 	unsigned long	millisec_timestamp = (time_stamp.tv_sec * 1000) + (time_stamp.tv_usec / 1000);
 
-	yakuza->TRD.elapsed_since_last_meal = millisec_timestamp - (yakuza->TRD.last_meal);
+	yakuza->trd.elapsed_since_last_meal = millisec_timestamp - (yakuza->trd.last_meal);
 
-	if ((yakuza->TRD.elapsed_since_last_meal - yakuza->TRD.eat_plus_sleep) > yakuza->TRD.mid_thinking_time)
+	if ((yakuza->trd.elapsed_since_last_meal - yakuza->trd.eat_plus_sleep) > yakuza->trd.mid_thinking_time)
 	{
 		yakuza->priority = HIGH;
 		return(HIGH);
@@ -18,16 +18,16 @@ prio	set_priority(one_bro *yakuza)
 }
 
 // FYI - Max useconds is 999 999 (so almost 1 sec)
-void	update_timestamp_last_meal(one_bro *yakuza)
+void	update_timestamp_last_meal(t_yaks *yakuza)
 {
 	struct timeval time_stamp;
 	gettimeofday(&time_stamp, NULL);
 	unsigned long	millisec_timestamp = (time_stamp.tv_sec * 1000) + (time_stamp.tv_usec / 1000);
 
-	yakuza->TRD.last_meal = millisec_timestamp;
+	yakuza->trd.last_meal = millisec_timestamp;
 }
 
-bool	is_yakuza_alive(one_bro *yakuza)
+bool	is_yakuza_alive(t_yaks *yakuza)
 {
 	if(!is_party_on(yakuza))
 		return(false);
@@ -35,10 +35,10 @@ bool	is_yakuza_alive(one_bro *yakuza)
 	gettimeofday(&time_stamp, NULL);
 	unsigned long	millisec_timestamp = (time_stamp.tv_sec * 1000) + (time_stamp.tv_usec / 1000);
 
-	yakuza->TRD.now = millisec_timestamp;
-	yakuza->TRD.elapsed_since_last_meal = millisec_timestamp - (yakuza->TRD.last_meal);
+	yakuza->trd.now = millisec_timestamp;
+	yakuza->trd.elapsed_since_last_meal = millisec_timestamp - (yakuza->trd.last_meal);
 
-	if(millisec_timestamp >= (yakuza->TRD.last_meal + yakuza->TRD.time_to_die))
+	if(millisec_timestamp >= (yakuza->trd.last_meal + yakuza->trd.time_to_die))
 	{
 		pthread_mutex_lock(yakuza->dead_flag);
 		*yakuza->party_is_on = false;
@@ -49,17 +49,17 @@ bool	is_yakuza_alive(one_bro *yakuza)
 	}
 	return(true);
 }
-void	free_both_chopsticks(mutex_t *chopstick_1, mutex_t *chopstick_2)
+void	free_both_chopsticks(t_mutex *chopstick_1, t_mutex *chopstick_2)
 {
 	pthread_mutex_unlock(chopstick_1);
 	pthread_mutex_unlock(chopstick_2);
 }
 
 // Saving value locally
-bool	is_party_on(one_bro *yakuza)
+bool	is_party_on(t_yaks *yakuza)
 {
 	bool	check;
-	pthread_mutex_lock(yakuza->dead_flag);
+	pthread_mutex_lock(yakuza->dead_flag);		// segfault
 	check = *yakuza->party_is_on;
 	pthread_mutex_unlock(yakuza->dead_flag);
 

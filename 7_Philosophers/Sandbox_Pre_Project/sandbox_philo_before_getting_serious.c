@@ -95,7 +95,7 @@ void	*chopsticks_party(void *arg)
 	next_yakuza = next_bro(this_yakuza, next_bro);
 
 	printf("%sCurrent Yakuza in thread function : Position : %d | ID [%lu] Debug [%lu]\n%s", GREEN,
-		this_yakuza->position, this_yakuza->thread_ID, current_thread, NC);
+		this_yakuza->position, this_yakuza->thread_id, current_thread, NC);
 
 	pthread_mutex_lock(&this_yakuza->mutual_exclusion);
 	if (can_yakuza_eat(this_yakuza, previous_yakuza, next_yakuza))
@@ -145,8 +145,8 @@ int	main(int argc, char **argv)
 		this_yakuza->time_to_die = time_2_die;
 		this_yakuza->how_many_meals = number_of_times_each_philosopher_must_eat;
 		this_yakuza->mutual_exclusion = mut_ex;
-		pthread_create(&this_yakuza->thread_ID, NULL, chopsticks_party, this_yakuza);
-		printf("%sYakuza %d has ID [%lu]\n%s", BLUE, i + 1, this_yakuza->thread_ID, NC);
+		pthread_create(&this_yakuza->thread_id, NULL, chopsticks_party, this_yakuza);
+		printf("%sYakuza %d has ID [%lu]\n%s", BLUE, i + 1, this_yakuza->thread_id, NC);
 		this_yakuza++;
 		i++;
 	}
@@ -158,7 +158,7 @@ int	main(int argc, char **argv)
 	i = 0;
 	while (i < amount_of_yakuzas)
 	{
-		pthread_join(this_yakuza->thread_ID, NULL);
+		pthread_join(this_yakuza->thread_id, NULL);
 		this_yakuza++;
 		i++;
 	}
