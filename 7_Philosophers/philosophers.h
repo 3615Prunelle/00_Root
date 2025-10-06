@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philosophers.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sophie <sophie@student.42.fr>              +#+  +:+       +#+        */
+/*   By: schappuy <schappuy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/05 16:13:16 by sophie            #+#    #+#             */
-/*   Updated: 2025/10/05 23:08:58 by sophie           ###   ########.fr       */
+/*   Updated: 2025/10/06 15:18:47 by schappuy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,7 @@ typedef struct t_yaks
 }						t_yaks;
 
 // ⚪ Functions signatures - Setup
-t_input		input_setup(char **argv, t_input data_to_conv, unsigned long now_in_millisec);
+t_input		input_setup(int ac, char **av, t_input *data_to_conv, unsigned long now_in_millisec);
 void		mutex_init(t_mutex *all_chopsticks, t_mutex *flag, t_input *data_to_conv);
 void		yakuza_array_set_up(t_yaks *yakuza, t_input *data_to_conv, bool *party_on, unsigned long now_in_millisec);
 void		mutex_setup(t_yaks *yakuza, t_input *data_to_conv, t_mutex *all_chopsticks, t_mutex *flag);

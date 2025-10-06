@@ -11,8 +11,7 @@ void	*itadakimasu(void *arg)
 			return (NULL);
 		if (yakuza->position % 2 == 0)
 		{
-			take_chopsticks_and_eat(yakuza, yakuza->left_chpstk,
-				yakuza->right_chpstk);
+			take_chopsticks_and_eat(yakuza, yakuza->left_chpstk, yakuza->right_chpstk);
 			if (yakuza->current_state == EATING)
 			{
 				sleep_till_think(yakuza);
@@ -20,8 +19,7 @@ void	*itadakimasu(void *arg)
 		}
 		else
 		{
-			take_chopsticks_and_eat(yakuza, yakuza->right_chpstk,
-				yakuza->left_chpstk);
+			take_chopsticks_and_eat(yakuza, yakuza->right_chpstk, yakuza->left_chpstk);
 			if (yakuza->current_state == EATING)
 			{
 				sleep_till_think(yakuza);
