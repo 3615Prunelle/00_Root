@@ -5,7 +5,6 @@
 
 int	main(int argc, char **argv)
 {
-	(void)argc;		// tester void instead of int dans args input main
 	t_input			data_to_conv;
 	struct timeval	now;
 	unsigned long	now_in_millisec;
@@ -15,51 +14,53 @@ int	main(int argc, char **argv)
 	pthread_t		monitor_san;
 	bool			party_on;
 
+	(void)argc; // tester void instead of int dans args input main
 	party_on = true;
 	gettimeofday(&now, NULL);
 	now_in_millisec = (now.tv_sec * 1000) + (now.tv_usec / 1000);
-
-	data_to_conv = input_setup(argv, data_to_conv, now_in_millisec);		// Not anymore - Malloc done here
-	if(data_to_conv.amount_of_yakuzas == 1)
+	data_to_conv = input_setup(argv, data_to_conv, now_in_millisec);
+		// Not anymore - Malloc done here
+	if (data_to_conv.amount_of_yakuzas == 1)
 		return (0);
-
 	all_chopsticks = malloc(sizeof(t_mutex) * data_to_conv.amount_of_yakuzas);
 	flag = malloc(sizeof(t_mutex));
 	mutex_init(all_chopsticks, flag, &data_to_conv);
-
 	yakuza = malloc(sizeof(t_yaks) * data_to_conv.amount_of_yakuzas);
-	yakuza_array_set_up(yakuza, &data_to_conv, &party_on, now_in_millisec);				// Malloc done here
+	yakuza_array_set_up(yakuza, &data_to_conv, &party_on, now_in_millisec);
+		// Malloc done here
 	mutex_setup(yakuza, &data_to_conv, all_chopsticks, flag);
-	monitor_san = threads_setup(yakuza, &data_to_conv);						// Had to return thread otherwise I couldn't free it later
+	monitor_san = threads_setup(yakuza, &data_to_conv);
+		// Had to return thread otherwise I couldn't free it later
 	join_destroy_free(yakuza, all_chopsticks, flag, &monitor_san);
 	// free(data_to_conv);
 	return (0);
 }
 
-t_input	input_setup(char **argv, t_input data_to_conv, unsigned long now_in_millisec)
+t_input	input_setup(char **argv, t_input data_to_conv,
+		unsigned long now_in_millisec)
 {
-//	data_to_conv = malloc(sizeof(t_input));
-
+	//	data_to_conv = malloc(sizeof(t_input));
 	data_to_conv.amount_of_yakuzas = ft_atoi(argv[1]);
 	data_to_conv.time_to_die = ft_atoi(argv[2]);
 	data_to_conv.time_to_eat = ft_atoi(argv[3]);
 	data_to_conv.time_to_sleep = ft_atoi(argv[4]);
 	data_to_conv.eat_plus_sleep = ft_atoi(argv[3]) + ft_atoi(argv[4]);
-	data_to_conv.mid_thinking_time = (ft_atoi(argv[2]) - ft_atoi(argv[3]) + ft_atoi(argv[4])) / 2;
-
+	data_to_conv.mid_thinking_time = (ft_atoi(argv[2]) - ft_atoi(argv[3])
+			+ ft_atoi(argv[4])) / 2;
 	if (data_to_conv.amount_of_yakuzas == 1)
 	{
 		printf("%s%lu\t1 died\n%s", S_RED, now_in_millisec, NC);
 		return (data_to_conv);
 	}
-	if (argv[5] != NULL)		// if issues, prendre argc en arg (if argc == 6)
+	if (argv[5] != NULL) // if issues, prendre argc en arg (if argc == 6)
 		data_to_conv.number_of_times_each_philosopher_must_eat = ft_atoi(argv[5]);
 	else
 		data_to_conv.number_of_times_each_philosopher_must_eat = 200;
 	return (data_to_conv);
 }
 
-void	mutex_init(t_mutex *all_chopsticks, t_mutex *flag, t_input *data_to_conv)
+void	mutex_init(t_mutex *all_chopsticks, t_mutex *flag,
+		t_input *data_to_conv)
 {
 	int	i;
 
@@ -74,10 +75,11 @@ void	mutex_init(t_mutex *all_chopsticks, t_mutex *flag, t_input *data_to_conv)
 	// return (all_chopsticks);
 }
 
-void	yakuza_array_set_up(t_yaks *yakuza, t_input *data_to_conv, bool *party_on, unsigned long now_in_millisec)
+void	yakuza_array_set_up(t_yaks *yakuza, t_input *data_to_conv,
+		bool *party_on, unsigned long now_in_millisec)
 {
-	t_yaks		*backup_first_yakuza;
-	int			i;
+	t_yaks	*backup_first_yakuza;
+	int		i;
 
 	backup_first_yakuza = yakuza;
 	i = 0;
@@ -103,10 +105,11 @@ void	yakuza_array_set_up(t_yaks *yakuza, t_input *data_to_conv, bool *party_on, 
 	yakuza = backup_first_yakuza;
 }
 
-void	mutex_setup(t_yaks *yakuza, t_input *data_to_conv, t_mutex *all_chopsticks, t_mutex *flag)
+void	mutex_setup(t_yaks *yakuza, t_input *data_to_conv,
+		t_mutex *all_chopsticks, t_mutex *flag)
 {
-	t_yaks		*backup_first_yakuza;
-	int			i;
+	t_yaks	*backup_first_yakuza;
+	int		i;
 
 	backup_first_yakuza = yakuza;
 	i = 0;
@@ -145,13 +148,14 @@ pthread_t	threads_setup(t_yaks *yakuza, t_input *data_to_conv)
 	}
 	yakuza = backup_first_yakuza;
 	pthread_create(&monitor_san, NULL, monitor, (void *)yakuza);
-	return(monitor_san);
+	return (monitor_san);
 }
 
-void	join_destroy_free(t_yaks *yakuza, t_mutex *all_chopsticks, t_mutex *flag, pthread_t	*monitor_san)
+void	join_destroy_free(t_yaks *yakuza, t_mutex *all_chopsticks,
+		t_mutex *flag, pthread_t *monitor_san)
 {
-	t_yaks		*backup_first_yakuza;
-	int			i;
+	t_yaks	*backup_first_yakuza;
+	int		i;
 
 	backup_first_yakuza = yakuza;
 	i = 0;

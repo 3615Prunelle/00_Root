@@ -1,53 +1,61 @@
-# include "philosophers.h"
+#include "philosophers.h"
 
 // timeval structs dans struct yaks plutot que TDR & calculs ?
 t_prio	set_priority(t_yaks *yakuza)
 {
-	struct timeval time_stamp;
+	struct timeval	time_stamp;
+	unsigned long	millisec_timestamp;
+
 	gettimeofday(&time_stamp, NULL);
-	unsigned long	millisec_timestamp = (time_stamp.tv_sec * 1000) + (time_stamp.tv_usec / 1000);
-
-	yakuza->trd.elapsed_since_last_meal = millisec_timestamp - (yakuza->trd.last_meal);
-
-	if ((yakuza->trd.elapsed_since_last_meal - yakuza->trd.eat_plus_sleep) > yakuza->trd.mid_thinking_time)
+	millisec_timestamp = (time_stamp.tv_sec * 1000) + (time_stamp.tv_usec
+			/ 1000);
+	yakuza->trd.elapsed_since_last_meal = millisec_timestamp
+		- (yakuza->trd.last_meal);
+	if ((yakuza->trd.elapsed_since_last_meal
+			- yakuza->trd.eat_plus_sleep) > yakuza->trd.mid_thinking_time)
 	{
 		yakuza->priority = HIGH;
-		return(HIGH);
+		return (HIGH);
 	}
-	return(LOW);
+	return (LOW);
 }
 
 // FYI - Max useconds is 999 999 (so almost 1 sec)
 void	update_timestamp_last_meal(t_yaks *yakuza)
 {
-	struct timeval time_stamp;
-	gettimeofday(&time_stamp, NULL);
-	unsigned long	millisec_timestamp = (time_stamp.tv_sec * 1000) + (time_stamp.tv_usec / 1000);
+	struct timeval	time_stamp;
+	unsigned long	millisec_timestamp;
 
+	gettimeofday(&time_stamp, NULL);
+	millisec_timestamp = (time_stamp.tv_sec * 1000) + (time_stamp.tv_usec
+			/ 1000);
 	yakuza->trd.last_meal = millisec_timestamp;
 }
 
 bool	is_yakuza_alive(t_yaks *yakuza)
 {
-	if(!is_party_on(yakuza))
-		return(false);
-	struct timeval time_stamp;
+	struct timeval	time_stamp;
+	unsigned long	millisec_timestamp;
+
+	if (!is_party_on(yakuza))
+		return (false);
 	gettimeofday(&time_stamp, NULL);
-	unsigned long	millisec_timestamp = (time_stamp.tv_sec * 1000) + (time_stamp.tv_usec / 1000);
-
+	millisec_timestamp = (time_stamp.tv_sec * 1000) + (time_stamp.tv_usec
+			/ 1000);
 	yakuza->trd.now = millisec_timestamp;
-	yakuza->trd.elapsed_since_last_meal = millisec_timestamp - (yakuza->trd.last_meal);
-
-	if(millisec_timestamp >= (yakuza->trd.last_meal + yakuza->trd.time_to_die))
+	yakuza->trd.elapsed_since_last_meal = millisec_timestamp
+		- (yakuza->trd.last_meal);
+	if (millisec_timestamp >= (yakuza->trd.last_meal + yakuza->trd.time_to_die))
 	{
 		pthread_mutex_lock(yakuza->dead_flag);
 		*yakuza->party_is_on = false;
-		printf("%s%lu %d died\n%s", S_RED, millisec_timestamp, yakuza->position, NC);
+		printf("%s%lu %d died\n%s", S_RED, millisec_timestamp, yakuza->position,
+			NC);
 		yakuza->current_state = DEAD;
 		pthread_mutex_unlock(yakuza->dead_flag);
-		return(false);
+		return (false);
 	}
-	return(true);
+	return (true);
 }
 void	free_both_chopsticks(t_mutex *chopstick_1, t_mutex *chopstick_2)
 {
@@ -59,11 +67,11 @@ void	free_both_chopsticks(t_mutex *chopstick_1, t_mutex *chopstick_2)
 bool	is_party_on(t_yaks *yakuza)
 {
 	bool	check;
-	pthread_mutex_lock(yakuza->dead_flag);		// segfault
+
+	pthread_mutex_lock(yakuza->dead_flag); // segfault
 	check = *yakuza->party_is_on;
 	pthread_mutex_unlock(yakuza->dead_flag);
-
-	if(check)
+	if (check)
 		return (true);
 	return (false);
 }
