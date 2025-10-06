@@ -6,7 +6,7 @@
 /*   By: schappuy <schappuy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/05 16:13:16 by sophie            #+#    #+#             */
-/*   Updated: 2025/10/06 15:18:47 by schappuy         ###   ########.fr       */
+/*   Updated: 2025/10/06 20:49:05 by schappuy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,8 +71,8 @@ typedef struct t_input
 typedef struct t_time_related_data
 {
 	unsigned long	now;
-	unsigned long	last_meal;
-	int				elapsed_since_last_meal;
+	unsigned long	timestamp_last_meal;
+	int				elapsed_since_meal;
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				time_to_die;
