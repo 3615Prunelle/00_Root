@@ -41,9 +41,11 @@ CFLAGS = -g -pthread -Wall -Wextra -Werror
 LFLAGS =
 
 SRCS =	philo_main.c \
+		philo_setup.c \
 		philo_routines.c \
 		philo_helpers.c \
-		philo_actions.c
+		philo_actions.c \
+		philo_mutex.c
 
 OBJS = $(SRCS:.c=.o)
 
