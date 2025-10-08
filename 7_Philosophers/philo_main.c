@@ -6,7 +6,7 @@
 /*   By: schappuy <schappuy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/08 00:41:08 by schappuy          #+#    #+#             */
-/*   Updated: 2025/10/08 17:39:42 by schappuy         ###   ########.fr       */
+/*   Updated: 2025/10/08 18:03:37 by schappuy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,11 @@ int	main(int ac, char **av)
 	pthread_t	monitor_san;
 	bool		party_on;
 
+	if ((ac < 5) || (ac > 6))
+	{
+		printf("%s", ERROR_MSG);
+		return (0);
+	}
 	party_on = true;
 	input = input_setup(ac, av, &input, get_timestamp(NULL, false));
 	if (input.amount_of_yakuzas == 1)

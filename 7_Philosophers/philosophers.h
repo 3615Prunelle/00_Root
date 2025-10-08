@@ -6,7 +6,7 @@
 /*   By: schappuy <schappuy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/05 16:13:16 by sophie            #+#    #+#             */
-/*   Updated: 2025/10/08 17:47:01 by schappuy         ###   ########.fr       */
+/*   Updated: 2025/10/08 17:55:44 by schappuy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@
 # define CYAN "\e[1;36m"
 # define S_CYAN "\e[36m"
 
-# define ERROR_MESSSAGE_01 "TBD\n"
+# define ERROR_MSG "Wrong Input - Please provide valid arguments\n"
 
 // ⚪ #include
 # include <pthread.h>
