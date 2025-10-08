@@ -15,6 +15,21 @@ ET selon si je :
 - Compile via VSCode (path from workspaceFolder)
 */
 
+// ⚪ Colors to make the outputs more readable
+# define BLUE "\e[34m"
+# define BOLD_BLUE "\e[1;34m"
+# define MAGENTA "\e[35m"
+# define BOLD_MAGENTA "\e[1;35m"
+# define YELLOW "\e[33m"
+# define BOLD_YELLOW "\e[1;33m"
+# define RED "\e[31m"
+# define BOLD_RED "\e[1;31m"
+# define GREEN "\e[32m"
+# define BOLD_GREEN "\e[1;32m"
+# define CYAN "\e[36m"
+# define BOLD_CYAN "\e[1;36m"
+# define NC "\e[0m"
+
 // ⚪ #include
 # include <stdlib.h>
 # include <unistd.h>
