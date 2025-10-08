@@ -6,13 +6,13 @@
 /*   By: schappuy <schappuy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/08 00:41:35 by schappuy          #+#    #+#             */
-/*   Updated: 2025/10/08 00:56:56 by schappuy         ###   ########.fr       */
+/*   Updated: 2025/10/08 17:41:10 by schappuy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-// timeval structs dans struct yaks plutot que TDR & calculs ?
+// Idea - Timeval structs dans struct yaks plutot que TDR & calculs ?
 t_prio	set_priority(t_yaks *yakuza)
 {
 	struct timeval	time_stamp;
@@ -107,32 +107,28 @@ int	ft_atoi(const char *nptr)
 }
 
 // Separate join & destroy to avoid data races
-void	join_destroy_free(t_yaks *yakuza, t_mutex *all_chopsticks,
-		t_mutex *flag, t_mutex *lock, pthread_t *monitor_san)
+void	join_destroy_free(t_yaks *yakuza, t_mutex *all_mutex,
+			pthread_t *monitor_san)
 {
-	t_yaks	*backup_first_yakuza;
 	int		backup_total_yakuzas;
 	int		i;
 
 	backup_total_yakuzas = yakuza->total_yakuzas;
-	backup_first_yakuza = yakuza;
 	i = 0;
 	while (i < backup_total_yakuzas)
 	{
-		pthread_join(yakuza->thread_id, NULL);
-		yakuza++;
+		pthread_join(yakuza[i].thread_id, NULL);
 		i++;
 	}
 	i = 0;
 	pthread_join(*monitor_san, NULL);
 	while (i < backup_total_yakuzas)
 	{
-		pthread_mutex_destroy(&all_chopsticks[i]);
+		pthread_mutex_destroy(yakuza[i].left_chpstk);
 		i++;
 	}
-	pthread_mutex_destroy(flag);
-	pthread_mutex_destroy(lock);
-	free(all_chopsticks);
-	yakuza = backup_first_yakuza;
+	pthread_mutex_destroy(yakuza->dead_flag);
+	pthread_mutex_destroy(yakuza->you_shall_not_pass);
+	free(all_mutex);
 	free(yakuza);
 }

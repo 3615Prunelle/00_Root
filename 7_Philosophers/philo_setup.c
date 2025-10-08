@@ -6,7 +6,7 @@
 /*   By: schappuy <schappuy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/08 00:41:04 by schappuy          #+#    #+#             */
-/*   Updated: 2025/10/08 00:55:04 by schappuy         ###   ########.fr       */
+/*   Updated: 2025/10/08 17:46:29 by schappuy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,19 +34,19 @@ t_input	input_setup(int ac, char **av, t_input *input,
 	return (*input);
 }
 
-void	mutex_init(t_mutex *all_chopsticks, t_mutex *flag, t_mutex *lock,
-		t_input *input)
+// One mutex per chopstick + death mutex + multipurpose mutex
+void	mutex_init(t_mutex *all_mutex, t_input *input)
 {
 	int	i;
 
 	i = 0;
 	while (i < input->amount_of_yakuzas)
 	{
-		pthread_mutex_init(&all_chopsticks[i], NULL);
+		pthread_mutex_init(&all_mutex[i], NULL);
 		i++;
 	}
-	pthread_mutex_init(flag, NULL);
-	pthread_mutex_init(lock, NULL);
+	pthread_mutex_init(&all_mutex[i], NULL);
+	pthread_mutex_init(&all_mutex[i + 1], NULL);
 }
 
 void	yakuza_array_setup(t_yaks *yakuza, t_input *input, bool *party_on,
@@ -76,32 +76,27 @@ void	yakuza_array_setup(t_yaks *yakuza, t_input *input, bool *party_on,
 }
 
 // Si ca marche faire une struct de mutex ?
-void	mutex_setup(t_yaks *yakuza, t_input *input, t_mutex *all_chopsticks,
-		t_mutex *flag, t_mutex *lock)
+void	mutex_setup(t_yaks *yakuza, t_input *input, t_mutex *all_mutex)
 {
-	t_yaks	*backup_first_yakuza;
 	int		i;
 
-	backup_first_yakuza = yakuza;
 	i = 0;
 	while (i < input->amount_of_yakuzas)
 	{
-		if (yakuza->position == input->amount_of_yakuzas)
+		if (yakuza[i].position == input->amount_of_yakuzas)
 		{
-			yakuza->left_chpstk = &all_chopsticks[i];
-			yakuza->right_chpstk = &all_chopsticks[0];
+			yakuza[i].left_chpstk = &all_mutex[i];
+			yakuza[i].right_chpstk = &all_mutex[0];
 		}
 		else
 		{
-			yakuza->left_chpstk = &all_chopsticks[i];
-			yakuza->right_chpstk = &all_chopsticks[i + 1];
+			yakuza[i].left_chpstk = &all_mutex[i];
+			yakuza[i].right_chpstk = &all_mutex[i + 1];
 		}
-		yakuza->dead_flag = flag;
-		yakuza->you_shall_not_pass = lock;
-		yakuza++;
+		yakuza[i].dead_flag = &all_mutex[input->amount_of_yakuzas];
+		yakuza[i].you_shall_not_pass = &all_mutex[input->amount_of_yakuzas + 1];
 		i++;
 	}
-	yakuza = backup_first_yakuza;
 }
 
 pthread_t	threads_setup(t_yaks *yakuza, t_input *input)

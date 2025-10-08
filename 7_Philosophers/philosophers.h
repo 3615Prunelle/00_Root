@@ -6,7 +6,7 @@
 /*   By: schappuy <schappuy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/05 16:13:16 by sophie            #+#    #+#             */
-/*   Updated: 2025/10/08 00:51:57 by schappuy         ###   ########.fr       */
+/*   Updated: 2025/10/08 17:47:01 by schappuy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,37 +100,35 @@ typedef struct t_yaks
 // ⚪ Functions signatures - Setup
 t_input					input_setup(int ac, char **av, t_input *input,
 							unsigned long now_in_millisec);
-void					mutex_init(t_mutex *all_chopsticks, t_mutex *flag,
-							t_mutex *lock, t_input *input);
+void					mutex_init(t_mutex *all_mutex, t_input *input);
 void					yakuza_array_setup(t_yaks *yakuza,
 							t_input *input, bool *party_on,
 							unsigned long now_in_millisec);
 void					mutex_setup(t_yaks *yakuza, t_input *input,
-							t_mutex *all_chopsticks, t_mutex *flag,
-							t_mutex *lock);
+							t_mutex *all_mutex);
 pthread_t				threads_setup(t_yaks *yakuza, t_input *input);
-void					join_destroy_free(t_yaks *yakuza,
-							t_mutex *all_chopsticks, t_mutex *flag,
-							t_mutex *lock, pthread_t *monitor_san);
 
-// ⚪ Functions signatures - Actions
+// ⚪ Functions signatures - Routines & Actions
 void					*itadakimasu(void *arg);
+void					*monitor(void *arg);
 void					take_chopsticks_and_eat(t_yaks *yakuza,
 							t_mutex *chopstick_1, t_mutex *chopstick_2);
 void					sleep_till_think(t_yaks *yakuza);
+void					print_and_change_status(t_state state, t_yaks *yakuza);
 
 // ⚪ Functions signatures - Helpers
-void					*monitor(void *arg);
-bool					is_yakuza_alive(t_yaks *yakuza);
-t_prio					set_priority(t_yaks *yakuza);
+int						ft_atoi(const char *nptr);
 unsigned long			get_timestamp(t_yaks *yakuza, bool update_last_meal);
-void					print_and_change_status(t_state state, t_yaks *yakuza);
+t_prio					set_priority(t_yaks *yakuza);
 int						copy_meal_count(t_yaks *yakuza, bool remove_one);
-bool					dead_mutex(t_mutex *death_verif);
-bool					is_dead(t_yaks *yakuza, bool death_confirmed);
 bool					is_party_on(t_yaks *yakuza);
+bool					is_yakuza_alive(t_yaks *yakuza);
+bool					is_dead(t_yaks *yakuza, bool death_confirmed);
+
+// ⚪ Free Functions
 void					free_both_chopsticks(t_mutex *chopstick_1,
 							t_mutex *chopstick_2);
-int						ft_atoi(const char *nptr);
+void					join_destroy_free(t_yaks *yakuza, t_mutex *all_mutex,
+							pthread_t *monitor_san);
 
 #endif
