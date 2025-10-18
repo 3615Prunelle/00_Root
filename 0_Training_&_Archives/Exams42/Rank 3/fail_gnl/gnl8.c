@@ -19,16 +19,17 @@ char    *get_next_line(int fd)
 			return(NULL);
 		}
 		printf("C'est parti : %s", head.buff);
+		fflush(stdout);
 		reset = false;						// set to true when need to read more
-		setup_indexes(&head);
+		setup_indexes(&head, true);
 	}
-	if(!reset)
+	else if(!reset)
 	{
 		// One node/line has been returned
 		// Delete that node(and change head ptr address), or move contents (what happens with the last node ?)
 		free(head.buff);
 		backup_head = head.next;				// par defaut, indexes a -1, update that
-		setup_indexes(backup_head);
+		setup_indexes(backup_head, true);		// lock EOF car on a les restes du previous node (nope - foireux car prev peut avoir \0)
 
 	// Check si pas de faux \0 ou \n detecté en passant dans les if en dessous, puis set up la loop de read + new node tant qu'on a pas trouvé de \n ou \0
 		/*
@@ -106,7 +107,7 @@ void	add_node_move_chars(node *head, node *dest)
 	// dest will be a new string with potentially many \n and eof, or none, or only EOF
 }
 
-void	setup_indexes(node *n)
+void	setup_indexes(node *n, bool lock_EOF)
 {
 	int i = 0;
 	while(i < BUFFER_SIZE)
@@ -115,7 +116,7 @@ void	setup_indexes(node *n)
 		{
 			n->index_newline = i;
 		}
-		else if(n->buff[i] == '\0')
+		else if((n->buff[i] == '\0') && (!lock_EOF))
 		{
 			n->index_eof = i;
 		}
@@ -132,16 +133,11 @@ void	setup_node(node *n)
 	n->next = NULL;
 }
 
-int	main(int argc, char **argv)
+int	main(void)
 {
 	int	fd;
-	if((argc != 2) || argv[1][0] == '\0')
-	{
-		return(1);
-	}
-	// fd = argv[1]; // comment out when done
 	fd = open("./test_gnl.txt", 0);
-	
+
 	char	*buffer;
 	buffer = get_next_line(fd);
 	printf("\n\nFinal :\t\t%s", buffer);

@@ -18,7 +18,9 @@
 		"unistd.h": "c",
 		"string.h": "c",
 		"philosophers.h": "c",
-		"pthread.h": "c"
+		"pthread.h": "c",
+		"gnl.h": "c",
+		"random": "c"
 	},
 		"files.exclude": {
 			"**/*.o": true	// Masquer tous les .o après chaque compilation
