@@ -14,19 +14,9 @@
 #include <fcntl.h>
 
 #ifndef BUFFER_SIZE
-#define BUFFER_SIZE 2
+#define BUFFER_SIZE 10
 #endif
 
-int count_chars = BUFFER_SIZE;
-
-typedef struct node
-{
-	char	*buff;
-	int		index_newline;
-	int		index_eof;
-	struct node	*next;
-} 		node;
-
-char    *get_next_line(int fd);
+char	*get_next_line(int fd);
 
 #endif
