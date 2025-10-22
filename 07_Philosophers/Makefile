@@ -4,7 +4,7 @@ CC = cc
 
 CFLAGS = -g -pthread -Wall -Wextra -Werror
 
-# Flags de linking - No need here ?
+# Flags de linking - No need here
 LFLAGS =
 
 SRCS =	philo_main.c \
