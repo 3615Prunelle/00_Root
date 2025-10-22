@@ -1,4 +1,3 @@
-# Tuto :
 # Ignorer un fichier déjà archivé, annuler le suivi du fichier. : git rm --cached FILENAME dans racine
 
 # Push_Swap
