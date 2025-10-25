@@ -33,8 +33,8 @@
 			"type": "cppdbg",
 			"request": "launch",
 			"program": "${fileDirname}/${fileBasenameNoExtension}",			// ATTENTION - Doit matcher "args" dans tasks.json
-			"args": ["az"],
-			// "args": ["arg1", "arg2"],
+			// "args": ["az"],
+			"args": ["test"],
 			"environment": [{ "name": "config", "value": "Debug" }],	// Définit une variable d'environnement
 			"cwd": "${fileDirname}",					// Racine (dossier VSCode) - ATTENTION - Doit matcher "cwd" dans tasks.json
 			"preLaunchTask": "C/C++: cc build active file"				// Compile uniquement le fichier en cours d'édition
@@ -163,6 +163,22 @@
 				{ "text": "handle SIGUSR2 nostop pass" }	// intercepte le signal avant mon programme ('interupt' ou autre erreur)
 			],
 			"preLaunchTask": "Build with Makefile for Philosophers"
+		},
+//--------- Minishell --------------------------------------------------------------------------------------------------------------- //
+		{
+			"name": "Minishell w/ Makefile (to set up)",	// Doesn't find the .h - Because it's not in my git repo ?
+			"type": "cppdbg",
+			"request": "launch",
+			"program": "${workspaceRoot}/8_Minishell/minishell",
+			// "args": ["4", "410", "200", "100"/* , "2" */],
+			"environment": [{ "name": "config", "value": "Debug" }],
+			"cwd": "${workspaceFolder}",
+			"MIMode": "gdb",
+			"setupCommands": [
+				{ "text": "handle SIGUSR1 nostop pass" },	// Indispensable pour débug dans VSCode, sinon erreur car gdb
+				{ "text": "handle SIGUSR2 nostop pass" }	// intercepte le signal avant mon programme ('interupt' ou autre erreur)
+			],
+			"preLaunchTask": "Build with Makefile for Minishell"
 		},
 //--------- Tuto Config - A garder en dernier ------------------------------------------------------------------------------------------- //
 		// {

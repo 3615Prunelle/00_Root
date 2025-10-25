@@ -6,7 +6,7 @@
 /*   By: schappuy <schappuy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/14 17:40:20 by schappuy          #+#    #+#             */
-/*   Updated: 2025/01/24 16:58:07 by schappuy         ###   ########.fr       */
+/*   Updated: 2025/10/25 17:52:59 by schappuy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,9 +37,6 @@ void	*ft_memmove(void *dest, const void *srce, size_t siz)
 	}
 	return (dest);
 }
-
-#include <stdio.h>
-#include <string.h>
 
 // int main(void)
 // {

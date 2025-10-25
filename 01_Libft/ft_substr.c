@@ -6,7 +6,7 @@
 /*   By: schappuy <schappuy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/02 16:26:41 by schappuy          #+#    #+#             */
-/*   Updated: 2024/12/13 15:16:05 by schappuy         ###   ########.fr       */
+/*   Updated: 2025/10/25 20:03:40 by schappuy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,17 +35,18 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 	return (sub);
 }
 
-// #include <stdio.h>
+#include <stdio.h>
 
-// int	main(void)
-// {
-// 	char s[] = "123 456";
-// 	unsigned int start = 2;
-// 	size_t len = 4;
+int	main(void)
+{
+	char s[] = "Creates a string of len size from start index";
+	unsigned int start = 2;
+	size_t len = 4;
 
-// 	char *zz = ft_substr(s, start, len);
+	char *zz = ft_substr(s, start, len);
 
-// 	printf("%p\n", zz);
+	// printf("%p\n", zz);
+	printf("%s\n", zz);
 
-// 	return (0);
-// }
+	return (0);
+}

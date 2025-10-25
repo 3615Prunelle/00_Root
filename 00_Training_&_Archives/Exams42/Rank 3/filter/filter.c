@@ -11,9 +11,9 @@ char	*string_to_check(void);
 
 void	c_parti(char *i1, char *i2, int si1, int si2)
 {
-	int	i = 0;
+	int		i = 0;
 	char	*occurence;
-	int	chars_left;
+	int		chars_left;
 	occurence = memmem(i2, si2, i1, si1);
 	if ((si2 < si1) || (!occurence))
 	{

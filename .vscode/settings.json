@@ -20,7 +20,9 @@
 		"philosophers.h": "c",
 		"pthread.h": "c",
 		"gnl.h": "c",
-		"random": "c"
+		"random": "c",
+		"time.h": "c",
+		"wait.h": "c"
 	},
 		"files.exclude": {
 			"**/*.o": true	// Masquer tous les .o après chaque compilation

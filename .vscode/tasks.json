@@ -30,11 +30,14 @@
 			"command": "/usr/bin/cc",					// Utilise cc (un alias pour gcc ou clang) pour compiler le fichier ouvert
 			"args": [
 				"-g",
+				"-I${workspaceFolder}/98_include",		// Path depuis 00_Root
 				// "-fsanitize=thread",					// Utile pour spotter des data race quand je manipule des threads
 				"${file}",
 				"-o",
 				"${fileDirname}/${fileBasenameNoExtension}",	// Génère un exécutable du nom du fichier, dans le dossier du fichier - ATTENTION, doit matcher "program" dans launch.json
-				// "-Wall",						// Active tous les avertissements de base
+				"-L${workspaceFolder}/99_lib",
+				"-lft",
+				// "-Wall",							// Active tous les avertissements de base
 				// "-Wextra",						// Active des avertissements supplémentaires
 				// "-Werror",						// Traite les avertissements comme des erreurs
 			],
@@ -306,6 +309,21 @@
 			"args": ["re"],				// Par défaut, commande make. Ajouter ["re] ou autre si nécessaire
 			"options": {
 				"cwd": "${workspaceFolder}/7_Philosophers/"		// Localisation du Makefile
+			},
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": []
+		},
+//--------- Tâche 13 : Compil pour Minishell ----------------------------------------------------------------------------------------------------- //
+		{
+			"label": "Build with Makefile for Minishell",
+			"type": "shell",
+			"command": "make",
+			"args": ["re"],				// Par défaut, commande make. Ajouter ["re] ou autre si nécessaire
+			"options": {
+				"cwd": "${workspaceFolder}/8_Minishell/"		// Localisation du Makefile
 			},
 			"group": {
 				"kind": "build",

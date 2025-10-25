@@ -6,7 +6,7 @@
 /*   By: schappuy <schappuy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/03 16:03:16 by schappuy          #+#    #+#             */
-/*   Updated: 2025/03/06 20:42:22 by schappuy         ###   ########.fr       */
+/*   Updated: 2025/10/25 20:01:05 by schappuy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,12 +93,10 @@ static unsigned char	ft_is_c_trim(const char char_str0, const char *totrim)
 	return ((unsigned char)0);
 }
 
-// #include <stdio.h>
-
 // int	main(void)
 // {
-// 	char str[] = "eett 123eett123 et";
-// 	char totrim[] = "te";
+// 	char str[] = "oioo-Removes chars at beg+end till other char is found-oooi";
+// 	char totrim[] = "io";
 
 // 	char *final = ft_strtrim(str, totrim);
 
