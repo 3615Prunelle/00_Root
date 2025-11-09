@@ -164,7 +164,7 @@
 			],
 			"preLaunchTask": "Build with Makefile for Philosophers"
 		},
-//--------- Minishell --------------------------------------------------------------------------------------------------------------- //
+//--------- Minishell Final --------------------------------------------------------------------------------------------------------------- //
 		{
 			"name": "Minishell w/ Makefile (to set up)",	// Doesn't find the .h - Because it's not in my git repo ?
 			"type": "cppdbg",
@@ -175,10 +175,35 @@
 			"cwd": "${workspaceFolder}",
 			"MIMode": "gdb",
 			"setupCommands": [
-				{ "text": "handle SIGUSR1 nostop pass" },	// Indispensable pour débug dans VSCode, sinon erreur car gdb
+				{ "text": "handle SIGUSR1 nostop pass" },	// Indispensable pour débug signaux dans VSCode, sinon erreur car gdb
 				{ "text": "handle SIGUSR2 nostop pass" }	// intercepte le signal avant mon programme ('interupt' ou autre erreur)
 			],
 			"preLaunchTask": "Build with Makefile for Minishell"
+		},
+//--------- Minishell Exec Testing --------------------------------------------------------------------------------------------------------------- //
+		{
+			"name": "Minishell MicroTests",
+			"type": "cppdbg",
+			"request": "launch",
+			"program": "${workspaceRoot}/08_Minishell/sources/temp_exec",
+			// "args": ["echo", "-n", "Courgette", ""],							// ✅
+			// "args": ["echo", "Kiwi", "", ""],								// ✅
+			// "args": ["cd", "", "", ""],										// Not requested ? Or do once I have the env var $USER
+			// "args": ["cd", ".", "", ""],										// ✅ Do nothing
+			// "args": ["cd", "..", "", ""],									// ✅ Up one dir
+			// "args": ["cd", "../Downloads", "", ""],							// ✅ Relative path1
+			// "args": ["cd", "07_Philosophers", "", ""],						// ✅ Relative path2
+			// "args": ["cd", "/home/schappuy/Documents","", ""],				// ✅ Absolute path
+			// "args": ["pwd", "", "", ""],										// ✅
+			// "args": ["export", "", "", ""],									// ‼️ TO DO
+			// "args": ["unset", "", "", ""],									// ‼️ TO DO
+			"args": ["env", "", "", ""],										// ‼️ TO DO
+			// "args": ["exit", "", "", ""],									// ✅ (TBC - Memory leaks checks)
+			// "args": ["ls", "", "", ""],									//
+			"environment": [{ "name": "config", "value": "Debug" }],
+			"cwd": "${workspaceFolder}",
+			"MIMode": "gdb",
+			"preLaunchTask": "Minishell Exec Testing"
 		},
 //--------- Tuto Config - A garder en dernier ------------------------------------------------------------------------------------------- //
 		// {

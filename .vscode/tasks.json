@@ -316,7 +316,7 @@
 			},
 			"problemMatcher": []
 		},
-//--------- Tâche 13 : Compil pour Minishell ----------------------------------------------------------------------------------------------------- //
+//--------- Tâche 13 : Compil pour Minishell final w/ Makefile ------------------------------------------------------------------------------------------ //
 		{
 			"label": "Build with Makefile for Minishell",
 			"type": "shell",
@@ -324,6 +324,39 @@
 			"args": ["re"],				// Par défaut, commande make. Ajouter ["re] ou autre si nécessaire
 			"options": {
 				"cwd": "${workspaceFolder}/8_Minishell/"		// Localisation du Makefile
+			},
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": []
+		},
+//--------- Tâche 14 : Compil pour Minishell testing perso ----------------------------------------------------------------------------------------------- //
+		{
+			"label": "Minishell Exec Testing",
+			"type": "shell",
+			"command": "/usr/bin/cc",
+			"args": [
+// Flags de compilation puis de linking
+				"-g",						// Debug info
+				"exec_command_filter.c",		// Fichier(s) à compiler
+				"exec_builtin_commands.c",
+				"exec_external_commands.c",
+				"-I${workspaceFolder}/98_include",				// -I = Ajoute un répertoire à aller scanner pour aller chercher des include (.h)
+				"-I${workspaceFolder}/08_Minishell/includes/",
+				"-L${workspaceFolder}/99_lib",
+				"-L${workspaceFolder}/08_Minishell/sources",	// Chemin d'accès du répertoire où se trouve l'exécutable
+				"-o",						// Flag qui précède le nom de l'exécutable
+				"${workspaceFolder}/08_Minishell/sources/temp_exec",	// Path + nom de l'exécutable
+				// "-Wall",					// Active tous les avertissements de base
+				// "-Wextra",					// Active des avertissements supplémentaires
+				// "-Werror",					// Traite les avertissements comme des erreurs
+// S'assurer que tous les projets/libs ont été compilés avant de les ajouter aux lignes suivantes
+				"-lftprintf",				// A chaque nouveau .a/.h à utiliser, ajouter une ligne au dessus de celle-ci.
+				"-lft"						// -lft = -l ft = -l (lib)ft = Liaison avec libft.a - A METTRE A LA FIN IMPERATIVEMENT Sinon bug de type 'undefined reference to ft_*'
+			],
+			"options": {
+				"cwd": "${workspaceFolder}/08_Minishell/sources"	// Path du repo où se trouvent les .c mentionnés plus haut
 			},
 			"group": {
 				"kind": "build",
