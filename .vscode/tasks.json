@@ -342,6 +342,7 @@
 				"exec_command_filter.c",		// Fichier(s) à compiler
 				"exec_builtin_commands.c",
 				"exec_external_commands.c",
+				"exec_env_setup.c",
 				"-I${workspaceFolder}/98_include",				// -I = Ajoute un répertoire à aller scanner pour aller chercher des include (.h)
 				"-I${workspaceFolder}/08_Minishell/includes/",
 				"-L${workspaceFolder}/99_lib",

@@ -169,7 +169,7 @@
 			"name": "Minishell w/ Makefile (to set up)",	// Doesn't find the .h - Because it's not in my git repo ?
 			"type": "cppdbg",
 			"request": "launch",
-			"program": "${workspaceRoot}/8_Minishell/minishell",
+			"program": "${workspaceFolder}/8_Minishell/minishell",
 			// "args": ["4", "410", "200", "100"/* , "2" */],
 			"environment": [{ "name": "config", "value": "Debug" }],
 			"cwd": "${workspaceFolder}",
