@@ -26,7 +26,7 @@
 //--------- Tâche 2 : Même chose que la précédente, mais avec config légèrement différente -------------------------------------------------------------- //
 		{
 			"type": "cppbuild",
-			"label": "C/C++: cc build active file",		// Attention, tâches aux noms similaires, ne pas confondre (ici, compilateur cc)
+			"label": "Active file - This one",		// Attention, tâches aux noms similaires, ne pas confondre (ici, compilateur cc)
 			"command": "/usr/bin/cc",					// Utilise cc (un alias pour gcc ou clang) pour compiler le fichier ouvert
 			"args": [
 				"-g",
@@ -37,9 +37,9 @@
 				"${fileDirname}/${fileBasenameNoExtension}",	// Génère un exécutable du nom du fichier, dans le dossier du fichier - ATTENTION, doit matcher "program" dans launch.json
 				"-L${workspaceFolder}/99_lib",
 				"-lft",
-				// "-Wall",							// Active tous les avertissements de base
-				// "-Wextra",						// Active des avertissements supplémentaires
-				// "-Werror",						// Traite les avertissements comme des erreurs
+				"-Wall",							// Active tous les avertissements de base
+				"-Wextra",						// Active des avertissements supplémentaires
+				"-Werror",						// Traite les avertissements comme des erreurs
 			],
 			"options": {
 				"cwd": "${fileDirname}"				// Path du repo où se trouve le fichier à compiler (mentionné plus haut) - ATTENTION - Doit matcher "cwd" dans launch.json

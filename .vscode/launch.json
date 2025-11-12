@@ -33,11 +33,10 @@
 			"type": "cppdbg",
 			"request": "launch",
 			"program": "${fileDirname}/${fileBasenameNoExtension}",			// ATTENTION - Doit matcher "args" dans tasks.json
-			// "args": ["az"],
-			"args": ["aaa"],
+			"args": ["aa"],
 			"environment": [{ "name": "config", "value": "Debug" }],	// Définit une variable d'environnement
 			"cwd": "${fileDirname}",					// Racine (dossier VSCode) - ATTENTION - Doit matcher "cwd" dans tasks.json
-			"preLaunchTask": "C/C++: cc build active file"				// Compile uniquement le fichier en cours d'édition
+			"preLaunchTask": "Active file - This one"				// Compile uniquement le fichier en cours d'édition
 		},
 //--------- Config 3 : Même but que la config précédente, mais pour un environnement BSD ------------------------------------------------ //
 		{
