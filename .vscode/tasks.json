@@ -343,6 +343,14 @@
 				"exec_builtin_commands.c",
 				"exec_external_commands.c",
 				"exec_env_setup.c",
+				"main.c",
+				"signals.c",
+				"utils.c",
+				"lexer/lexer.c",
+				"lexer/lexer_words.c",
+				"lexer/lexer_operators.c",
+				"lexer/lexer_chars.c",
+				"lexer/lexer_utils.c",
 				"-I${workspaceFolder}/98_include",				// -I = Ajoute un répertoire à aller scanner pour aller chercher des include (.h)
 				"-I${workspaceFolder}/08_Minishell/includes/",
 				"-L${workspaceFolder}/99_lib",
@@ -353,6 +361,7 @@
 				// "-Wextra",					// Active des avertissements supplémentaires
 				// "-Werror",					// Traite les avertissements comme des erreurs
 // S'assurer que tous les projets/libs ont été compilés avant de les ajouter aux lignes suivantes
+				"-lreadline",
 				"-lftprintf",				// A chaque nouveau .a/.h à utiliser, ajouter une ligne au dessus de celle-ci.
 				"-lft"						// -lft = -l ft = -l (lib)ft = Liaison avec libft.a - A METTRE A LA FIN IMPERATIVEMENT Sinon bug de type 'undefined reference to ft_*'
 			],

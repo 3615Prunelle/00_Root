@@ -186,7 +186,7 @@
 			"request": "launch",
 			"program": "${workspaceRoot}/08_Minishell/sources/temp_exec",
 			// "args": ["echo", "-n", "Courgette", ""],							// ✅
-			// "args": ["echo", "Kiwi", "", ""],								// ✅
+			"args": ["echo", "Kiwi", "", ""],								// ✅
 			// "args": ["cd", "", "", ""],										// Not requested ? Or do once I have the env var $USER
 			// "args": ["cd", ".", "", ""],										// ✅ Do nothing
 			// "args": ["cd", "..", "", ""],									// ✅ Up one dir
@@ -194,9 +194,10 @@
 			// "args": ["cd", "07_Philosophers", "", ""],						// ✅ Relative path2
 			// "args": ["cd", "/home/schappuy/Documents","", ""],				// ✅ Absolute path
 			// "args": ["pwd", "", "", ""],										// ✅
-			// "args": ["export", "", "", ""],									// ‼️ TO DO
-			// "args": ["unset", "", "", ""],									// ‼️ TO DO
-			"args": ["env", "", "", ""],										// ‼️ TO DO
+			// "args": ["export", "FRUIT", "=", "Pomme"],						// ✅
+			// "args": ["export", "USER", "=", "Prunelle"],						// ✅
+			// "args": ["unset", "USER", "", ""],								// ✅
+			// "args": ["env", "", "", ""],										// ✅
 			// "args": ["exit", "", "", ""],									// ✅ (TBC - Memory leaks checks)
 			// "args": ["ls", "", "", ""],									//
 			"environment": [{ "name": "config", "value": "Debug" }],
