@@ -33,7 +33,7 @@
 			"type": "cppdbg",
 			"request": "launch",
 			"program": "${fileDirname}/${fileBasenameNoExtension}",			// ATTENTION - Doit matcher "args" dans tasks.json
-			"args": ["aa"],
+			"args": ["ls", "-a"],
 			"environment": [{ "name": "config", "value": "Debug" }],	// Définit une variable d'environnement
 			"cwd": "${fileDirname}",					// Racine (dossier VSCode) - ATTENTION - Doit matcher "cwd" dans tasks.json
 			"preLaunchTask": "Active file - This one"				// Compile uniquement le fichier en cours d'édition
@@ -186,23 +186,13 @@
 			"request": "launch",
 			"program": "${workspaceRoot}/08_Minishell/sources/temp_exec",
 			// "args": ["echo", "-n", "Courgette", ""],							// ✅
-			"args": ["echo", "Kiwi", "", ""],								// ✅
-			// "args": ["cd", "", "", ""],										// Not requested ? Or do once I have the env var $USER
-			// "args": ["cd", ".", "", ""],										// ✅ Do nothing
-			// "args": ["cd", "..", "", ""],									// ✅ Up one dir
-			// "args": ["cd", "../Downloads", "", ""],							// ✅ Relative path1
-			// "args": ["cd", "07_Philosophers", "", ""],						// ✅ Relative path2
-			// "args": ["cd", "/home/schappuy/Documents","", ""],				// ✅ Absolute path
-			// "args": ["pwd", "", "", ""],										// ✅
-			// "args": ["export", "FRUIT", "=", "Pomme"],						// ✅
-			// "args": ["export", "USER", "=", "Prunelle"],						// ✅
-			// "args": ["unset", "USER", "", ""],								// ✅
-			// "args": ["env", "", "", ""],										// ✅
-			// "args": ["exit", "", "", ""],									// ✅ (TBC - Memory leaks checks)
-			// "args": ["ls", "", "", ""],									//
 			"environment": [{ "name": "config", "value": "Debug" }],
 			"cwd": "${workspaceFolder}",
 			"MIMode": "gdb",
+			"setupCommands": [
+				{ "text": "handle SIGUSR1 nostop pass" },	// Indispensable pour débug signaux dans VSCode, sinon erreur car gdb
+				{ "text": "handle SIGUSR2 nostop pass" }	// intercepte le signal avant mon programme ('interupt' ou autre erreur)
+			],
 			"preLaunchTask": "Minishell Exec Testing"
 		},
 //--------- Tuto Config - A garder en dernier ------------------------------------------------------------------------------------------- //

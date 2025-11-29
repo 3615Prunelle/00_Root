@@ -37,9 +37,9 @@
 				"${fileDirname}/${fileBasenameNoExtension}",	// Génère un exécutable du nom du fichier, dans le dossier du fichier - ATTENTION, doit matcher "program" dans launch.json
 				"-L${workspaceFolder}/99_lib",
 				"-lft",
-				"-Wall",							// Active tous les avertissements de base
-				"-Wextra",						// Active des avertissements supplémentaires
-				"-Werror",						// Traite les avertissements comme des erreurs
+				// "-Wall",							// Active tous les avertissements de base
+				// "-Wextra",						// Active des avertissements supplémentaires
+				// "-Werror",						// Traite les avertissements comme des erreurs
 			],
 			"options": {
 				"cwd": "${fileDirname}"				// Path du repo où se trouve le fichier à compiler (mentionné plus haut) - ATTENTION - Doit matcher "cwd" dans launch.json
@@ -362,6 +362,7 @@
 				// "-Werror",					// Traite les avertissements comme des erreurs
 // S'assurer que tous les projets/libs ont été compilés avant de les ajouter aux lignes suivantes
 				"-lreadline",
+				"-lgetnextline",
 				"-lftprintf",				// A chaque nouveau .a/.h à utiliser, ajouter une ligne au dessus de celle-ci.
 				"-lft"						// -lft = -l ft = -l (lib)ft = Liaison avec libft.a - A METTRE A LA FIN IMPERATIVEMENT Sinon bug de type 'undefined reference to ft_*'
 			],
