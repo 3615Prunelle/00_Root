@@ -1,3 +1,6 @@
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
 #include <stdio.h>
@@ -10,7 +13,8 @@ int main(int ac, char **av)
 	int		i = 0;
 	size_t	size_to_filter = strlen(to_filter);
 
-	while ((read_ret = read(0, &c, 1)) >= 0)
+	int	fd = open("/tmp/myfifo", O_RDONLY);	// 'open' probably not allowed - Use only for fifo testing (check shortcuts notes)
+	while ((read_ret = read(fd, &c, 1)) >= 0)
 	{
 		if((c == to_filter[i]) && (i < size_to_filter))
 		{

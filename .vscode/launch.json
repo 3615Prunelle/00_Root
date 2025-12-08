@@ -33,7 +33,7 @@
 			"type": "cppdbg",
 			"request": "launch",
 			"program": "${fileDirname}/${fileBasenameNoExtension}",			// ATTENTION - Doit matcher "args" dans tasks.json
-			"args": ["ls", "-a"],
+			// "args": ["ls", "-a"],
 			"environment": [{ "name": "config", "value": "Debug" }],	// Définit une variable d'environnement
 			"cwd": "${fileDirname}",					// Racine (dossier VSCode) - ATTENTION - Doit matcher "cwd" dans tasks.json
 			"preLaunchTask": "Active file - This one"				// Compile uniquement le fichier en cours d'édition
@@ -165,13 +165,12 @@
 		},
 //--------- Minishell Final --------------------------------------------------------------------------------------------------------------- //
 		{
-			"name": "Minishell w/ Makefile (to set up)",	// Doesn't find the .h - Because it's not in my git repo ?
+			"name": "Minishell w/ Makefile",	// Doesn't find the .h - Because it's not in my git repo ?
 			"type": "cppdbg",
 			"request": "launch",
-			"program": "${workspaceFolder}/8_Minishell/minishell",
-			// "args": ["4", "410", "200", "100"/* , "2" */],
+			"program": "${workspaceFolder}/08_Minishell/minishell",
 			"environment": [{ "name": "config", "value": "Debug" }],
-			"cwd": "${workspaceFolder}",
+			"cwd": "${workspaceFolder}/08_Minishell",
 			"MIMode": "gdb",
 			"setupCommands": [
 				{ "text": "handle SIGUSR1 nostop pass" },	// Indispensable pour débug signaux dans VSCode, sinon erreur car gdb

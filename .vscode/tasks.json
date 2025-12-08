@@ -26,7 +26,7 @@
 //--------- Tâche 2 : Même chose que la précédente, mais avec config légèrement différente -------------------------------------------------------------- //
 		{
 			"type": "cppbuild",
-			"label": "Active file - This one",		// Attention, tâches aux noms similaires, ne pas confondre (ici, compilateur cc)
+			"label": "Active file - This one",
 			"command": "/usr/bin/cc",					// Utilise cc (un alias pour gcc ou clang) pour compiler le fichier ouvert
 			"args": [
 				"-g",
@@ -321,9 +321,9 @@
 			"label": "Build with Makefile for Minishell",
 			"type": "shell",
 			"command": "make",
-			"args": ["re"],				// Par défaut, commande make. Ajouter ["re] ou autre si nécessaire
+			// "args": ["re"],				// Par défaut, commande make. Ajouter ["re] ou autre si nécessaire
 			"options": {
-				"cwd": "${workspaceFolder}/8_Minishell/"		// Localisation du Makefile
+				"cwd": "${workspaceFolder}/08_Minishell"		// Localisation du Makefile
 			},
 			"group": {
 				"kind": "build",
