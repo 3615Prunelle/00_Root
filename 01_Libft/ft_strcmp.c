@@ -1,49 +1,41 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strncmp.c                                       :+:      :+:    :+:   */
+/*   ft_strcmp.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: schappuy <schappuy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/14 17:41:29 by schappuy          #+#    #+#             */
-/*   Updated: 2025/12/09 15:40:57 by schappuy         ###   ########.fr       */
+/*   Updated: 2025/12/09 16:39:55 by schappuy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-// Node : ft_strcmp now also exists
-
-int	ft_strncmp(const char *s1, const char *s2, size_t n)
+int	ft_strcmp(const char *s1, const char *s2)
 {
-	size_t	i;
+	int	i;
 
 	i = 0;
-	while (i < n && ((s1[i] != '\0') || (s2[i] != '\0')))
+	while (s1[i] == s2[i])
 	{
-		if (s1[i] != s2[i])
-		{
-			return ((unsigned char)s1[i] - (unsigned char)s2[i]);
-		}
 		i++;
+		if ((s1[i] == '\0') && (s2[i] == '\0'))
+			return (0);
 	}
-	return (0);
+	return (s1[i] - s2[i]);
 }
-
-// #include <stdio.h>
-// #include <string.h>
 
 // int	main(void)
 // {
-// 	char t1[] = "Zai Zai Zai Zai";
-// 	char t2[] = "Zaik";
-// 	size_t	t = 3;
+// 	char t1[] = "Zai";
+// 	char t2[] = "Zai";
 
-// 	int oo = ft_strncmp(t1, t2, t);
-// 	int zz = strncmp(t1, t2, t);
+// 	int oo = ft_strcmp(t1, t2);
+// 	int zz = strcmp(t1, t2);
 
-// 	printf("My Ft:  	%d\n", oo);
-// 	printf("Strncmp:	%d\n", zz);
+// 	printf("My Ft:\t\t%d\n", oo);
+// 	printf("Strcmp:\t\t%d\n", zz);
 
 // 	return (0);
 // }
