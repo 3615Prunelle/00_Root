@@ -321,7 +321,7 @@
 			"label": "Build with Makefile for Minishell",
 			"type": "shell",
 			"command": "make",
-			// "args": ["re"],				// Par défaut, commande make. Ajouter ["re] ou autre si nécessaire
+			"args": ["re"],				// Par défaut, commande make. Ajouter ["re] ou autre si nécessaire
 			"options": {
 				"cwd": "${workspaceFolder}/08_Minishell"		// Localisation du Makefile
 			},
