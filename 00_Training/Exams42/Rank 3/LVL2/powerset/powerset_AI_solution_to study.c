@@ -27,11 +27,12 @@ void find_subsets(int *arr, int size, int target, int start, int *current, int c
 		fflush(NULL);
 	}
 
+// La récursivité reprend au for car loop, donc se poursuit jusqu'à arriver à i < size
 	for (int i = start; i < size; i++)		// Setting i as start, to check the right int in the initial array
 	{
 		if (curr_sum + arr[i] <= target)	// Checking sum
 		{
-			current[curr_size] = arr[i];	// Adding int in array if sum not met
+			current[curr_size] = arr[i];	// Adding int in array bc sum not met
 			find_subsets(arr, size, target, i + 1, current, curr_size + 1, curr_sum + arr[i]);		// Rec, changing only start and current size
 //											  ^ start = index of array to write next number
 		}
