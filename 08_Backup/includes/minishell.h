@@ -195,7 +195,7 @@ void	execute_external_commands(t_shell *minishell);
 // exec built in functions
 char	*fetch_current_working_directory(void);
 void	execute_echo(t_command *cmds);
-void	execute_cd(t_token *first_command);
+void	execute_cd(t_command *cmds);
 void	execute_pwd(char *current_working_directory);
 // void	execute_export(t_shell *minishell);			// Leo handles
 // void	execute_unset(t_shell *minishell);			// Leo handles
@@ -212,8 +212,8 @@ void	execute_exit(t_shell *minishell);
 
 // exec external functions
 char	*build_path(char *file_name);
-int		fetch_fd(char *file_name);
-void	fork_and_exec(int fd_stdin, int fd_stdout, char	**execve_args);
+int		fetch_fd(char *file_name, bool append, bool truncate);
+void	fork_and_exec(int *fd, char	**execve_args);
 
 // Free functions
 // void	del_string(char *param);

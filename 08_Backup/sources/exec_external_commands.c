@@ -3,82 +3,77 @@
 
 void	execute_external_commands(t_shell *minishell)
 {
-	t_token	*all_commands;
-	all_commands = minishell->tokens.head;
+	t_command	*all_commands = minishell->pipeline->cmds;
+	char		*current_command;
 	size_t	i = 0;
-	int		fd = 0;									// Valeur par defaut si aucun switch requis ? Surement bad idea - A revoir
-
-	bool	cmd_binary_found = false;
+	int		fd[2] = {0, 1};			// fd[0] = in --- fd[1] = out
 
 	char	**execve_args;						// Tableau de strings (arguments du programme executé par execve)
 	execve_args = ft_calloc(sizeof(char *), 4);	// Room for 4 args
+	if (!execve_args)
+	{
+		perror("");								// Switch arg to NULL ?
+	}
 
 	int		execve_args_count = 0;
 	// Option for later : construire argv dans une boucle (mais requiert une realloc a chaque ajout TBC)
 
-	while (i < minishell->tokens.count)
+	int	commands_left = minishell->pipeline->count;
+
+	while(commands_left > 0)									// 🟣 |				ls | grep sources		sort < y | > z
 	{
-		if (all_commands->type == TOK_WORD)
+		execve_args_count = 0;
+		current_command = all_commands->argv[0];
+		execve_args[execve_args_count] = ft_strjoin("/bin/", current_command);				// Create binary path for the ext command
+		execve_args_count++;
+		i++;
+		while (all_commands->argv[i])														// (If applicable) Flag(s)
 		{
-			if((all_commands->raw_str[0] != '-') && (cmd_binary_found == false))
+			execve_args[execve_args_count] = ft_strdup(all_commands->argv[i]);
+			execve_args_count++;
+			i++;
+		}
+		if(all_commands->infile)							// 🟣 <				wc -l < doc		sort < doc
+		{
+			fd[0] = fetch_fd(all_commands->infile, false, false);
+		}
+		if(all_commands->outfile)							// 🟣 >				ls > doc
+		{
+			if (all_commands->append == 1)					// 🟣 >>			ls >> doc
 			{
-				execve_args[execve_args_count] = ft_strjoin("/bin/", all_commands->raw_str);			// Create binary path for the ext command
-				cmd_binary_found = true;
-				execve_args_count++;
-			}
-			else if (all_commands->raw_str[0] == '-')
-			{
-				execve_args[execve_args_count] = ft_strdup(all_commands->raw_str);						// (If applicable) Flag
-				execve_args_count++;
+				fd[1] = fetch_fd(all_commands->outfile, true, false);
 			}
 			else
 			{
-				execve_args[execve_args_count] = ft_strdup(all_commands->raw_str);						// (If applicable) File
-				fd = fetch_fd(all_commands->raw_str);
-				execve_args_count++;
+				fd[1] = fetch_fd(all_commands->outfile, false, true);
 			}
 		}
-		else
-// Something wrong here - In/Out files are added in the execve_args array = NO GOOD.
-// Find a way to add them if BEFORE the redirection, and not add them if AFTER
-// examples to work with :	wc -l < doc.txt
+		if(all_commands->has_heredoc == 1)					// 🟣 <<			grep ok << fin
 		{
-			i++;											// Car on a ira obligatoirement sur le next node pour trouver le in/outfile
-			fd = fetch_fd(all_commands->next->raw_str);		// Arg/location will change, grab in/outfile wherever Leo will put it
-			if(all_commands->type == TOK_REDIR_IN)			// 🟣 <				wc -l < test.txt
-			{
-				fork_and_exec(fd, 1, execve_args);
-				return;
-			}
-			else if(all_commands->type == TOK_REDIR_OUT)	// 🟣 >
-			{
-				fork_and_exec(0, fd, execve_args);
-				return;
-			}
-			else if(all_commands->type == TOK_HEREDOC) {}	// 🟣 <<
-			else if(all_commands->type == TOK_APPEND) {}	// 🟣 >>
-			else if(all_commands->type == TOK_PIPE) {}		// 🟣 |
+			// all input has been typed (but not saved ?)
+			// delimiter saved in struct
+			// Leo is working on it, wait till he's done
+			return;
 		}
-		i++;
-		all_commands = all_commands->next;
+		if(minishell->pipeline->count > 1)
+		{
+			// use pipe somewhere around here
+
+		}
+		fork_and_exec(fd, execve_args);
+		commands_left--;
+		all_commands++;
 	}
-	fork_and_exec(0, 1, execve_args);
 }
-// ls > test.txt
-void	fork_and_exec(int fd_stdin, int fd_stdout, char	**execve_args)
+
+void	fork_and_exec(int *fd, char	**execve_args)
 {
-// /* GNL TEST */			char	*test_gnl1 = get_next_line(1);
-// /* GNL TEST */			printf("%sDEBUG * GNL1 : %s\n%s", S_MAGENTA, test_gnl1, NC);
-// /* GNL TEST */			char	*test_gnl2 = get_next_line(fd_stdout);
-// /* GNL TEST */			printf("%sDEBUG * GNL2 : %s\n%s", S_MAGENTA, test_gnl2, NC);
-	char	*envp[] = {NULL};								// (Facultatif) - Tableau de strings (variables d’environnement)
-	pid_t fork_pid_return = fork();							// Seulement utile en cas de < << > >> |
+	char	*envp[] = {NULL};								// Fetch from struct using build_envp function (Done by Leo TBC)
+	pid_t	fork_pid_return = fork();						// Seulement utile en cas de < << > >> |
 	if(fork_pid_return == -1)
 			perror("------------------ Error");
 	pid_t child_pid;
 	int status;												// Status code = the one to put in the env var for error return ?
-	int	backup_stdin;
-	int	backup_stdout;
 
 	if(fork_pid_return != 0)								// Le parent attend le résultat avec waitpid
 	{
@@ -89,49 +84,51 @@ void	fork_and_exec(int fd_stdin, int fd_stdout, char	**execve_args)
 			printf("status is not 0 (%d) - Check macro in 'man waitpid' to find out what that means\n", status);
 		printf("%sDEBUG * From Parent - PID : %d\n%s", BLUE, getpid(), NC);
 	}
-	else		// Le child exécute la commande avec execve -> aller chercher la commande en binaire
+	else		// Le child exécute la commande binaire avec execve
 	{
 		printf("%sDEBUG * From Child - PID : %d - Parent PID : %d\n%s", CYAN, getpid(), getppid(), NC);
-		printf("%sDEBUG * Param FD_in : %d - Param FD_out : %d - Command : %s\n%s", RED, fd_stdin, fd_stdout, execve_args[0], NC);
-		if(fd_stdin != STDIN_FILENO)
+		printf("%sDEBUG * Param FD_in : %d - Param FD_out : %d - Command : %s\n%s", CYAN, fd[0], fd[1], execve_args[0], NC);
+		if(fd[0] != STDIN_FILENO)
 		{
-			backup_stdin = dup(0);
-			printf("%sBack up Stdin is %d\n%s", YELLOW, backup_stdin, NC);
-			dup2(fd_stdin, STDIN_FILENO);
-			printf("%sStdin 1 is now associated to FD %d\n%s", YELLOW, fd_stdin, NC);
-			close(fd_stdin);
+			printf("%sNew infile - FD %d is now FD 0 *** Stdout theorically unchanged : %d\n%s", YELLOW, fd[0], fd[1], NC);
+			dup2(fd[0], STDIN_FILENO);
+			close(fd[0]);					// Ok to close because it's been duplicated and it's now 0
 		}
-		if(fd_stdout != STDOUT_FILENO)
+		if(fd[1] != STDOUT_FILENO)
 		{
-			backup_stdout = dup(1);
-			printf("%sBack up Stdout is %d\n%s", YELLOW, backup_stdout, NC);
-			dup2(fd_stdout, STDOUT_FILENO);
-			printf("%sStdout 0 is now associated to FD %d\n%s", YELLOW, fd_stdout, NC);
-			close(fd_stdout);
+			printf("%sNew outfile - FD %d is now FD 1 *** Stdin theorically unchanged : %d\n%s", YELLOW, fd[1], fd[0], NC);
+			dup2(fd[1], STDOUT_FILENO);
+			// From here, nothing will printed on monitor because FD has changed
+			close(fd[1]);					// Ok to close because it's been duplicated and it's now 1
 		}
-		printf("%s", GREEN);
+		printf("%s", GREEN);	// So that the official output stands out
+		fflush(0);				// Remove after debug
 		if (execve(execve_args[0], execve_args, envp) == -1)
 		{
 			perror("------------------ Error");
 		}
 		printf("%s", NC);
-		if(fd_stdin != STDIN_FILENO)			// Revert back to normal
-			dup2(STDIN_FILENO, backup_stdin);
-		if(fd_stdout != STDOUT_FILENO)
-			dup2(STDOUT_FILENO, backup_stdout);
-		printf("Everything is theorically back to normal - FD-Wise\n");
-		// exit;
-		// return;				// Nope bc process must stop now ? But what about memory leaks ? Use free function
+		// No need to revert FD back to normal as everything is happening only within the child
 	}
 }
 
-// ls > test.txt
-int		fetch_fd(char *file_name)
+int		fetch_fd(char *file_name, bool append, bool truncate)
 {
 	int		fd;
 	char	*file_path = NULL;
 	file_path = build_path(file_name);
-	fd = open(file_path, O_WRONLY | O_CREAT | O_TRUNC, 0644);					// HYPER IMPORTANT - Tout se joue ici
+	if(append)
+	{
+		fd = open(file_path, O_CREAT | O_APPEND | O_RDWR, 0666);	// HYPER IMPORTANT - Tout se joue dans les flags - 0666 = permissions
+	}
+	else if (truncate)
+	{
+		fd = open(file_path, O_CREAT | O_TRUNC | O_RDWR, 0666);		// HYPER IMPORTANT - Tout se joue dans les flags - 0666 = permissions
+	}
+	else
+	{
+		fd = open(file_path, O_CREAT | O_RDWR, 0666);		// HYPER IMPORTANT - Tout se joue dans les flags - 0666 = permissions
+	}
 	free(file_path);
 	if (fd == -1)
 	{
