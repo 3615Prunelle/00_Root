@@ -34,7 +34,7 @@ void solve(int current_index, int total_to_remove, int num_removed, char *s)
 	if (current_index == ft_strlen(s))
 	{
 		if (num_removed == total_to_remove && !min_to_remove(s))
-			puts(s);
+			puts(s);			// prints the whole string at once, extra parenthesis have been replaced
 		return ;
 	}
 	 // Early termination: if we've already removed too many
@@ -43,10 +43,10 @@ void solve(int current_index, int total_to_remove, int num_removed, char *s)
 	if (s[current_index] == '(' || s[current_index] == ')')
 	{
 		// option 1: remove it
-		char temp = s[current_index];
-		s[current_index] = ' ';
+		char temp = s[current_index];	// backup d'une parenthese pour pouvoir la remettre apres
+		s[current_index] = ' ';			// Extra parenthesis are temporarily replaced here
 		solve(current_index + 1, total_to_remove, num_removed + 1, s);
-		s[current_index] = temp;
+		s[current_index] = temp;		// retour a la parenthese initiale
 		// option 2: keep it
 		solve(current_index + 1, total_to_remove, num_removed, s);
 	}

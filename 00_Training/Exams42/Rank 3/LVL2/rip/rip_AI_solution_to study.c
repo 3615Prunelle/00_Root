@@ -5,7 +5,8 @@ Génère toutes les combinaisons : à chaque parenthèse, tu testes 2 choix (gar
 Filtre : garde seulement celles qui sont valides ET qui enlèvent exactement le minimum
 Déduplique avec solution_exists
 
-C'est du brute force avec pruning. Dans le debugger, regarde comment find_solutions explore l'arbre binaire des choix (keep/remove à chaque position). Le min_remove évite de générer des solutions inutiles.
+C'est du brute force avec pruning. Dans le debugger, regarde comment find_solutions explore l'arbre binaire des choix (keep/remove à chaque position).
+Le min_remove évite de générer des solutions inutiles.
 Attention : strdup n'est pas dans les allowed functions, faudra peut-être l'implémenter toi-même. Remplace par un malloc + strcpy si besoin.
 */
 
