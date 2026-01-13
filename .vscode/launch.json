@@ -33,8 +33,9 @@
 			"type": "cppdbg",
 			"request": "launch",
 			"program": "${fileDirname}/${fileBasenameNoExtension}",			// ATTENTION - Doit matcher "args" dans tasks.json
-			// "args": ["5", "0", "2", "3", "5", "43"],
-			"args": ["cba"],
+			// "args": ["5", "0", "2", "3", "5"],
+			// "args": ["zaou"],
+			"args": ["(()))))"],
 			"environment": [{ "name": "config", "value": "Debug" }],	// Définit une variable d'environnement
 			"cwd": "${fileDirname}",					// Racine (dossier VSCode) - ATTENTION - Doit matcher "cwd" dans tasks.json
 			"preLaunchTask": "Active file - This one"				// Compile uniquement le fichier en cours d'édition
