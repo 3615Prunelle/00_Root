@@ -76,7 +76,7 @@ char *get_next_line(int fd)
 	{
 		if (!str_append_str(&ret, b))
 		{
-			free(ret);						// +
+			free(ret);						// Not sure it's useful
 			return NULL;
 		}
 		int read_ret = read(fd, b, BUFFER_SIZE);
