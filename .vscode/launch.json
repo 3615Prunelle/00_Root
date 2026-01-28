@@ -175,6 +175,12 @@
 			"cwd": "${workspaceFolder}/08_Minishell",
 			"MIMode": "gdb",
 			"setupCommands": [
+				// {
+				// 	"text": "set follow-fork-mode child"
+				// },
+				// {
+				// 	"text": "set detach-on-fork off"
+				// },
 				{ "text": "handle SIGUSR1 nostop pass" },	// Indispensable pour débug signaux dans VSCode, sinon erreur car gdb
 				{ "text": "handle SIGUSR2 nostop pass" }	// intercepte le signal avant mon programme ('interupt' ou autre erreur)
 			],
