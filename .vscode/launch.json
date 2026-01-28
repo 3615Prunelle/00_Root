@@ -175,12 +175,9 @@
 			"cwd": "${workspaceFolder}/08_Minishell",
 			"MIMode": "gdb",
 			"setupCommands": [
-				// {
-				// 	"text": "set follow-fork-mode child"
-				// },
-				// {
-				// 	"text": "set detach-on-fork off"
-				// },
+				// { "text": "set follow-fork-mode child"},	// Suit le child process plutot que le parent
+				// { "text": "set detach-on-fork off"},		// Commande complementaire a la precedente
+				// { "text": "set schedule-multiple on"},		// Suit tous les child process a la suite - Utiliser SEULEMENT si multiforks
 				{ "text": "handle SIGUSR1 nostop pass" },	// Indispensable pour débug signaux dans VSCode, sinon erreur car gdb
 				{ "text": "handle SIGUSR2 nostop pass" }	// intercepte le signal avant mon programme ('interupt' ou autre erreur)
 			],
