@@ -331,6 +331,25 @@
 			},
 			"problemMatcher": []
 		},
+//--------- Tâche 14 : Valgrind Minishell (task only - Not linked to config = Ctrl Shift P) ------------------------------------------------------------- //
+		{
+			"label": "Valgrind Minishell",
+			"type": "shell",
+			"command": "valgrind",
+			"args": [
+				"--leak-check=full",
+				"--show-leak-kinds=all",
+				"--track-fds=yes",
+				"--suppressions=${workspaceFolder}/08_Minishell/readline.supp",		// Ignores readline leaks
+				"${workspaceFolder}/08_Minishell/minishell"
+			],
+			"dependsOn": ["Build with Makefile for Minishell"],
+			"problemMatcher": [],
+			"presentation": {
+				"reveal": "always",
+				"panel": "new"
+			}
+		},
 //--------- Tâche 99 : Tâche tuto (garder en dernier) --------------------------------------------------------------------------------------------------- //
 		{
 			"label": "C/C++: Tâche",	// Nom de la tâche appelée par la config
