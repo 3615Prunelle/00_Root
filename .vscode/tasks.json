@@ -341,6 +341,7 @@
 				"--show-leak-kinds=all",
 				"--track-fds=yes",
 				"--suppressions=${workspaceFolder}/08_Minishell/readline.supp",		// Ignores readline leaks
+				// "--log-file=valgrind-output.txt",
 				"${workspaceFolder}/08_Minishell/minishell"
 			],
 			"dependsOn": ["Build with Makefile for Minishell"],

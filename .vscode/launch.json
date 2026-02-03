@@ -167,7 +167,7 @@
 		},
 //--------- Minishell ----------------------------------------------------------------------------------------------------------------- //
 		{
-			"name": "Minishell w/ Makefile",	// Doesn't find the .h - Because it's not in my git repo ?
+			"name": "Minishell w/ Makefile",
 			"type": "cppdbg",
 			"request": "launch",
 			"program": "${workspaceFolder}/08_Minishell/minishell",
@@ -175,13 +175,16 @@
 			"cwd": "${workspaceFolder}/08_Minishell",
 			"MIMode": "gdb",
 			"setupCommands": [
-				// { "text": "set follow-fork-mode child"},	// Suit le child process plutot que le parent
-				// { "text": "set detach-on-fork off"},		// Contrôle tous les process
-				// { "text": "set schedule-multiple on"},		// Continue tous ensemble
-				{ "text": "handle SIGUSR1 nostop pass" },	// Indispensable pour débug signaux dans VSCode, sinon erreur car gdb
-				{ "text": "handle SIGUSR2 nostop pass" }	// intercepte le signal avant mon programme ('interupt' ou autre erreur)
+				// { "text": "set follow-fork-mode child"},	// Suit uniquement le premier child process apres la fork
+															// Si "set detach-on-fork off", il bascule ensuite dans le parent
+				// { "text": "set detach-on-fork off"},		// off = parent et child restent visibles dans GDB (use 'info inferiors' pour basculer entre les process, ou 'info threads' entre les threads)
+				// { "text": "set schedule-multiple off"},		// on = tous les threads continuent à s’exécuter, même si GDB est arrêté sur un breakpoint (arrêt global à un breakpoint, tous les threads tournent)
+															// off = un seul thread avance jusqu'au breakpoint, MAIS tous les autres rep à la reprise
+				// { "text": "set scheduler-locking on"},		// on = en pressant f10, seul le thread courant avance, les autres sont gelés
+				// { "text": "handle SIGUSR1 nostop pass" },	// Indispensable pour débug signaux dans VSCode, sinon erreur car gdb
+				// { "text": "handle SIGUSR2 nostop pass" }	// intercepte le signal avant mon programme ('interupt' ou autre erreur)
 			],
-			"preLaunchTask": "Build with Makefile for Minishell"
+			"preLaunchTask": "Build with Makefile for Minishell",
 		},
 //--------- Tuto Config - A garder en dernier ------------------------------------------------------------------------------------------- //
 		// {
